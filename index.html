@@ -2,9 +2,17 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 على شكل تمارين Garmin مهيكلة، مع نطاقات نبض تفاعلية ودليل إدخال.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 على شكل تمارين Garmin مهيكلة، مع نطاقات نبض تفاعلية ومشغّل صافرات الاختبار ودليل إدخال.">
 <title>برنامج اليو‑يو</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f9d76">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="اليو‑يو">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <style>img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -251,7 +259,58 @@
   footer .disc{max-width:75ch;line-height:1.6}
 
   @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-  @media print{.topbar,.calc,.cf,.reset,.tbtn{display:none!important}.card{break-inside:avoid}}
+  @media print{.topbar,.calc,.cf,.reset,.tbtn,.playcta{display:none!important}.card{break-inside:avoid}}
+
+  /* ===== YYIR1 beep player ===== */
+  .playcta{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;background:var(--surface);
+    border:1px solid var(--line);border-inline-start:4px solid var(--z5);border-radius:12px;padding:12px 16px;
+    cursor:pointer;box-shadow:var(--shadow);text-align:start;font-family:inherit;color:var(--ink)}
+  .playcta:hover{border-color:var(--z5)}
+  .playcta:focus-visible{outline:2px solid var(--z5);outline-offset:2px}
+  .playcta .ic{width:36px;height:36px;border-radius:9px;background:var(--z5-soft);color:var(--z5);
+    display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+  .playcta .tt{font-family:var(--f-display);font-weight:800;font-size:15px;display:block}
+  .playcta .ss{font-size:12px;color:var(--ink-3);margin-top:2px;display:block;line-height:1.4}
+  .playcta .go{margin-inline-start:auto;color:var(--z5);font-weight:700;white-space:nowrap;font-size:13px}
+
+  .overlay{position:fixed;inset:0;z-index:80;background:rgba(6,10,8,.74);backdrop-filter:blur(5px);
+    display:grid;place-items:center;padding:14px}
+  .player{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.65);overflow:hidden;max-height:94vh;display:flex;flex-direction:column}
+  .player .ph{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line)}
+  .player .ph h3{font-size:16px;font-weight:800}
+  .player .ph .x{margin-inline-start:auto;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+    width:34px;height:34px;cursor:pointer;font-size:15px;color:var(--ink-2)}
+  .player .x:hover{color:var(--z5);border-color:var(--z5)}
+  .player .pb{padding:18px;overflow-y:auto}
+  .phase{border-radius:14px;padding:20px 18px;text-align:center;color:#fff;background:var(--ink-3);transition:background .25s}
+  .phase .lab{font-size:13px;opacity:.92;font-weight:600}
+  .phase .big{font-family:var(--f-display);font-weight:900;font-size:clamp(26px,7vw,36px);margin:2px 0 6px;letter-spacing:.01em}
+  .phase .nx{font-family:var(--f-mono);font-size:13px;opacity:.95}
+  .pmeter{height:8px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden;margin-top:14px}
+  .pmeter > i{display:block;height:100%;background:#fff;width:0;border-radius:99px}
+  .pmetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px}
+  .pm{background:var(--surface);padding:11px 6px;text-align:center}
+  .pm .k{font-size:10.5px;color:var(--ink-3)}
+  .pm .v{font-family:var(--f-mono);font-size:21px;font-weight:600;color:var(--ink);margin-top:2px}
+  .pctrls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .pbtn{flex:1;min-width:92px;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:12px 8px;
+    font-family:var(--f-display);font-weight:700;font-size:15px;cursor:pointer;color:var(--ink);
+    display:flex;gap:7px;align-items:center;justify-content:center}
+  .pbtn:hover{border-color:var(--line-2)}
+  .pbtn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .pbtn.warn2{color:var(--z5)}
+  .pbtn:disabled{opacity:.45;cursor:default}
+  .prow{display:flex;align-items:center;gap:10px;margin-top:14px}
+  .prow label{font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+  .prow input[type=range]{flex:1;accent-color:var(--accent)}
+  .pnote{font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.65}
+  .plevels{margin-top:14px;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-2);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;max-height:150px;overflow-y:auto}
+  .plevels div{display:flex;justify-content:space-between;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line)}
+  .plevels div:last-child{border-bottom:0}
+  .plevels div.cur{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
 </style>
 
 <div class="page">
@@ -289,6 +348,13 @@
         <input id="in-date" type="date" min="2026-01-01" max="2028-12-31">
         <span class="dnote">غيّره إن تأجّل الاختبار — يتحدّث العدّاد ويوم الاختبار تلقائيًا. يُحفظ على جهازك.</span>
       </div>
+
+      <button class="playcta" id="open-player" type="button">
+        <span class="ic">🔊</span>
+        <span><span class="tt">مشغّل صافرات YYIR1</span>
+          <span class="ss">شغّله يوم الاختبار بدل تطبيق منفصل — نغمات البروتوكول بالمستويات والسرعات الصحيحة</span></span>
+        <span class="go">تشغيل ←</span>
+      </button>
 
       <div class="profile" aria-label="ملفّي">
         <div class="stat"><div class="k">العمر</div><div class="v">20<span class="u"> سنة</span></div></div>
@@ -492,6 +558,37 @@
     <footer>
       <p class="disc">هذا البرنامج أداة تنظيم تدريبي وليس استشارة طبية. توقّف واستشر مختصًا عند أي ألم صدري أو دوار أو ضيق تنفّس غير معتاد. نطاقات النبض تقديرية — عايرها ميدانيًا. يُحفظ تقدّمك وأرقامك في متصفّح هذا الجهاز فقط.</p>
     </footer>
+  </div>
+
+  <div class="overlay" id="yoyo-overlay" hidden role="dialog" aria-modal="true" aria-label="مشغّل صافرات اليو‑يو">
+    <div class="player">
+      <div class="ph"><span aria-hidden="true">🔊</span><h3>صافرات YYIR1</h3>
+        <button class="x" id="yy-close" type="button" aria-label="إغلاق">✕</button></div>
+      <div class="pb">
+        <div class="phase" id="yy-phase">
+          <div class="lab" id="yy-plab">جاهز</div>
+          <div class="big" id="yy-pbig">اضغط ابدأ</div>
+          <div class="nx" id="yy-pnx">ارفع صوت الجوال إلى أقصاه وضعه جانب الملعب</div>
+          <div class="pmeter"><i id="yy-pfill"></i></div>
+        </div>
+        <div class="pmetrics">
+          <div class="pm"><div class="k">المستوى</div><div class="v" id="yy-level">—</div></div>
+          <div class="pm"><div class="k">السرعة km/h</div><div class="v" id="yy-speed">—</div></div>
+          <div class="pm"><div class="k">الشوط</div><div class="v" id="yy-shut">0</div></div>
+          <div class="pm"><div class="k">المسافة m</div><div class="v" id="yy-dist">0</div></div>
+        </div>
+        <div class="pctrls">
+          <button class="pbtn primary" id="yy-start" type="button">▶ ابدأ</button>
+          <button class="pbtn" id="yy-pause" type="button" disabled>⏸ إيقاف</button>
+          <button class="pbtn warn2" id="yy-reset" type="button">↺ تصفير</button>
+        </div>
+        <div class="prow"><label for="yy-vol">الصوت</label>
+          <input id="yy-vol" type="range" min="0" max="100" value="80">
+          <button class="pbtn" id="yy-test" type="button" style="flex:0 0 auto;min-width:0;padding:9px 12px;font-size:13px">اختبار الصوت</button></div>
+        <p class="pnote">البروتوكول: جري ذهاب‑إياب ٢٠م (=٤٠م) على إيقاع الصافرة، يليه ١٠ ثوانٍ استشفاء (٥م×٢). الصافرة تعني «كن عند الخط». نغمة مزدوجة تنبّهك قبل انطلاق كل شوط، ونغمة صاعدة عند تغيّر المستوى. عند توقّفك، سجّل «المسافة» الظاهرة — هي نتيجتك.<br>هذه أداة تدريب تتّبع مواصفات YYIR1 القياسية؛ للاختبار الرسمي الحاسم راجع مصدرًا معتمدًا.</p>
+        <div class="plevels" id="yy-levels"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -790,6 +887,13 @@
         body.appendChild(wid);
         body.appendChild(stepsList(w.steps));
         if(w.notes)body.appendChild(el("div","notes",w.notes));
+        if((w.zone||day.zone)==="test"){
+          var pb=el("button","playcta");pb.type="button";pb.style.marginTop="12px";
+          pb.innerHTML='<span class="ic">🔊</span><span><span class="tt">شغّل صافرات هذا الاختبار</span>'+
+            '<span class="ss">نغمات YYIR1 بالسرعات الصحيحة — بلا تطبيق منفصل</span></span><span class="go">تشغيل ←</span>';
+          pb.addEventListener("click",function(){if(window.__openYoyo)window.__openYoyo();});
+          body.appendChild(pb);
+        }
         card.appendChild(body);
 
         var cf=el("div","cf");
@@ -950,6 +1054,137 @@
 
   syncInputs();renderMeter();renderRail();renderWeek();renderProgress();renderCountdown();
 })();
+</script>
+
+<script>
+/* ===== YYIR1 beep-player engine ===== */
+(function(){
+  "use strict";
+  // مستويات YYIR1 القياسية: السرعة (km/h) وعدد أشواط الـ40م في كل مستوى
+  var LEVELS=[
+    {spd:10.0,n:1},{spd:12.0,n:1},{spd:13.0,n:2},{spd:13.5,n:3},{spd:14.0,n:4},
+    {spd:14.5,n:8},{spd:15.0,n:8},{spd:15.5,n:8},{spd:16.0,n:8},{spd:16.5,n:8},
+    {spd:17.0,n:8},{spd:17.5,n:8},{spd:18.0,n:8},{spd:18.5,n:8},{spd:19.0,n:8},
+    {spd:19.5,n:8},{spd:20.0,n:8}
+  ];
+  var EVENTS=[], SEG=[], TOTAL=0, LVLINFO=[];
+  (function build(){
+    var t=0, shut=0, dist=0;
+    for(var i=0;i<LEVELS.length;i++){
+      var v=LEVELS[i].spd, seg=72/v; // زمن قطع 20م بالثواني = 72/السرعة
+      LVLINFO.push({idx:i,spd:v,n:LEVELS[i].n,fromDist:dist,toDist:dist+LEVELS[i].n*40});
+      for(var s=0;s<LEVELS[i].n;s++){
+        var lu=(s===0);
+        EVENTS.push({time:t,kind:"go",levelup:lu,levelIdx:i});
+        SEG.push({start:t,end:t+seg,phase:"run",levelIdx:i,speed:v,shuttle:shut+1,dist:dist,part:"ذهاب"});
+        EVENTS.push({time:t+seg,kind:"turn"});
+        SEG.push({start:t+seg,end:t+2*seg,phase:"run",levelIdx:i,speed:v,shuttle:shut+1,dist:dist,part:"إياب"});
+        var tb=t+2*seg; shut++; dist+=40;
+        EVENTS.push({time:tb,kind:"back"});
+        SEG.push({start:tb,end:tb+10,phase:"rec",levelIdx:i,speed:v,shuttle:shut,dist:dist});
+        EVENTS.push({time:tb+8,kind:"prep"});
+        t=tb+10;
+      }
+    }
+    EVENTS.sort(function(a,b){return a.time-b.time;});
+    TOTAL=SEG.length?SEG[SEG.length-1].end:0;
+  })();
+
+  var actx=null, master=null, vol=0.8;
+  function ensure(){
+    if(!actx){var AC=window.AudioContext||window.webkitAudioContext; if(!AC)return false;
+      actx=new AC(); master=actx.createGain(); master.gain.value=vol; master.connect(actx.destination);}
+    if(actx.state==="suspended")actx.resume(); return true;
+  }
+  function beep(at,freq,dur,type){
+    if(!actx)return; var o=actx.createOscillator(),g=actx.createGain();
+    o.type=type||"sine"; o.frequency.value=freq; o.connect(g); g.connect(master);
+    var s=Math.max(at,actx.currentTime);
+    g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(1,s+0.006);
+    g.gain.setValueAtTime(1,s+Math.max(dur-0.03,0.02)); g.gain.linearRampToValueAtTime(0,s+dur);
+    o.start(s); o.stop(s+dur+0.03);
+  }
+  function say(i){try{if(!("speechSynthesis"in window))return;var u=new SpeechSynthesisUtterance("المستوى "+(i+1));
+    u.lang="ar-SA";u.rate=1;u.volume=Math.min(1,vol+0.1);window.speechSynthesis.cancel();window.speechSynthesis.speak(u);}catch(e){}}
+  function sound(ev,at){
+    if(ev.kind==="go"){ if(ev.levelup){beep(at,700,0.13);beep(at+0.17,1150,0.18);say(ev.levelIdx);} else {beep(at,1000,0.12);} }
+    else if(ev.kind==="turn"||ev.kind==="back"){ beep(at,1000,0.10); }
+    else if(ev.kind==="prep"){ beep(at,1500,0.07,"square"); beep(at+0.13,1500,0.07,"square"); }
+  }
+
+  var started=false, playing=false, t0=0, evIdx=0, schedT=null, uiT=null;
+  var $=function(id){return document.getElementById(id);};
+
+  function schedule(){ if(!playing||!actx)return; var ahead=actx.currentTime+0.25;
+    while(evIdx<EVENTS.length){ var ev=EVENTS[evIdx]; if(t0+ev.time<ahead){ sound(ev,t0+ev.time); evIdx++; } else break; } }
+  function segAt(el){ var lo=0,hi=SEG.length-1; if(el<0)return null; if(el>=TOTAL)return null;
+    while(lo<hi){var m=(lo+hi)>>1; if(SEG[m].end<=el)lo=m+1;else hi=m;} return SEG[lo]; }
+  function renderLevels(curIdx){ var host=$("yy-levels");
+    if(host.getAttribute("data-built")!=="1"){ host.innerHTML=""; LVLINFO.forEach(function(L){
+      var d=document.createElement("div"); d.setAttribute("data-lv",L.idx);
+      d.innerHTML='<span>مستوى '+(L.idx+1)+' · '+L.spd.toFixed(1)+' km/h</span><span>حتى '+L.toDist+' م</span>';
+      host.appendChild(d);}); host.setAttribute("data-built","1"); }
+    Array.prototype.forEach.call(host.children,function(c){c.classList.toggle("cur",+c.getAttribute("data-lv")===curIdx);});
+  }
+  function tick(){
+    if(!actx)return; var el=actx.currentTime-t0;
+    var ph=$("yy-phase");
+    if(el<0){ ph.style.background="var(--test)"; $("yy-plab").textContent="استعد"; $("yy-pbig").textContent=Math.ceil(-el)+""; $("yy-pnx").textContent="ابدأ عند الصافرة الطويلة"; $("yy-pfill").style.width="0%"; return; }
+    if(el>=TOTAL){ finish(); return; }
+    var sg=segAt(el); if(!sg)return; var run=sg.phase==="run";
+    ph.style.background="var("+(run?"--accent":"--z3")+")";
+    $("yy-plab").textContent=run?("اجرِ — "+sg.part):"استشفاء (جري خفيف)";
+    $("yy-pbig").textContent=run?"اجرِ!":"استشفِ";
+    var into=el-sg.start, len=sg.end-sg.start, left=Math.max(0,len-into);
+    $("yy-pnx").textContent=(run?"الصافرة بعد ":"انطلاق بعد ")+left.toFixed(1)+" ث";
+    $("yy-pfill").style.width=Math.min(100,into/len*100)+"%";
+    $("yy-level").textContent=sg.levelIdx+1; $("yy-speed").textContent=sg.speed.toFixed(1);
+    $("yy-shut").textContent=sg.shuttle; $("yy-dist").textContent=sg.dist;
+    renderLevels(sg.levelIdx);
+  }
+  function timers(on){ if(on){ schedT=setInterval(schedule,60); uiT=setInterval(tick,100); }
+    else { clearInterval(schedT); clearInterval(uiT); schedT=uiT=null; } }
+  function btns(){ $("yy-start").disabled=playing; $("yy-pause").disabled=!playing;
+    $("yy-start").innerHTML=started&&!playing?"▶ متابعة":"▶ ابدأ"; }
+
+  function start(){ if(playing)return; if(!ensure())return;
+    if(!started){ started=true; evIdx=0; var lead=3.4; t0=actx.currentTime+lead;
+      beep(t0-3,700,0.15); beep(t0-2,700,0.15); beep(t0-1,700,0.15); beep(t0,1200,0.28,"triangle"); }
+    playing=true; if(actx.state==="suspended")actx.resume(); timers(true); btns();
+  }
+  function pause(){ if(!playing)return; playing=false; if(actx)actx.suspend(); timers(false); btns(); }
+  function reset(){ playing=false; started=false; evIdx=0; timers(false);
+    if(actx){try{actx.close();}catch(e){} actx=null; master=null;}
+    $("yy-phase").style.background="var(--ink-3)"; $("yy-plab").textContent="جاهز";
+    $("yy-pbig").textContent="اضغط ابدأ"; $("yy-pnx").textContent="ارفع صوت الجوال إلى أقصاه وضعه جانب الملعب";
+    $("yy-pfill").style.width="0%"; $("yy-level").textContent="—"; $("yy-speed").textContent="—";
+    $("yy-shut").textContent="0"; $("yy-dist").textContent="0"; renderLevels(-1); btns();
+  }
+  function finish(){ playing=false; timers(false); if(actx)beep(actx.currentTime+0.05,500,0.5);
+    $("yy-phase").style.background="var(--test)"; $("yy-plab").textContent="انتهى البروتوكول";
+    $("yy-pbig").textContent="أحسنت"; $("yy-pnx").textContent="أكملت كل المستويات"; $("yy-pfill").style.width="100%"; btns(); }
+
+  function open(){ var o=$("yoyo-overlay"); o.hidden=false; renderLevels(-1); btns(); }
+  function close(){ pause(); $("yoyo-overlay").hidden=true; }
+  window.__openYoyo=open;
+
+  $("open-player").addEventListener("click",open);
+  $("yy-close").addEventListener("click",close);
+  $("yy-start").addEventListener("click",start);
+  $("yy-pause").addEventListener("click",pause);
+  $("yy-reset").addEventListener("click",reset);
+  $("yy-test").addEventListener("click",function(){ if(ensure())beep(actx.currentTime+0.02,1000,0.15); });
+  $("yy-vol").addEventListener("input",function(){ vol=(+this.value)/100; if(master)master.gain.value=vol; });
+  $("yoyo-overlay").addEventListener("click",function(e){ if(e.target===this)close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!$("yoyo-overlay").hidden)close(); });
+})();
+</script>
+<script>
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);});
+  });
+}
 </script>
 </body>
 </html>
