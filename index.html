@@ -86,6 +86,15 @@
   .stat .k{font-size:12px;color:var(--ink-3);margin-bottom:6px}
   .stat .v{font-family:var(--f-mono);font-size:26px;font-weight:600;color:var(--ink);line-height:1}
   .stat .u{font-size:12px;color:var(--ink-2);font-family:var(--f-body);font-weight:500}
+  .datebar{display:flex;align-items:center;gap:12px 14px;flex-wrap:wrap;margin-top:18px;background:var(--surface);
+    border:1px solid var(--line);border-left:4px solid var(--test);border-radius:12px;padding:13px 16px;box-shadow:var(--shadow)}
+  .datebar .lbl{font-weight:800;font-family:var(--f-display);font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .datebar .lbl .ic{width:26px;height:26px;border-radius:7px;background:var(--test-soft);color:var(--test);display:grid;place-items:center;font-size:14px}
+  .datebar input[type=date]{background:var(--bg);border:1px solid var(--line-2);border-radius:9px;
+    padding:8px 12px;font-family:var(--f-mono);font-size:14px;color:var(--ink);color-scheme:light dark}
+  .datebar input[type=date]:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .datebar .dnote{font-size:12px;color:var(--ink-3);flex:1;min-width:180px}
+  :root[data-theme="dark"] .datebar input[type=date]{color-scheme:dark}
 
   /* ===== Section shell ===== */
   section.block{padding:34px 0}
@@ -273,7 +282,13 @@
         <span class="ltr">Vivoactive&nbsp;5</span>
         — بدون لمس الجوال أثناء الجري. الهدف: اجتياز اختبار
         <span class="ltr">YYIR1</span>
-        يوم ٥ نوفمبر ٢٠٢٦.</p>
+        يوم <span id="lede-date">٥ نوفمبر ٢٠٢٦</span>.</p>
+
+      <div class="datebar">
+        <span class="lbl"><span class="ic">📅</span> موعد الاختبار</span>
+        <input id="in-date" type="date" min="2026-01-01" max="2028-12-31">
+        <span class="dnote">غيّره إن تأجّل الاختبار — يتحدّث العدّاد ويوم الاختبار تلقائيًا. يُحفظ على جهازك.</span>
+      </div>
 
       <div class="profile" aria-label="ملفّي">
         <div class="stat"><div class="k">العمر</div><div class="v">20<span class="u"> سنة</span></div></div>
@@ -484,7 +499,7 @@
 (function(){
   "use strict";
   var LS_KEY="yoyo_ir1_v1";
-  var TEST_DATE=new Date(2026,10,5); // 5 Nov 2026 (month is 0-based)
+  var DEFAULT_DATE="2026-11-05"; // 5 Nov 2026 — قابل للتعديل من الواجهة
 
   /* ---------- Program data ---------- */
   function wu(d){return{t:"Warm Up",d:d,tg:"wu"};}
@@ -564,7 +579,7 @@
       {name:"الأحد",focus:"شحذ أخير ٦×٣٠/٣٠ — آخر تمرين شديد",zone:"z5",workouts:[{id:"W8-D1-Sharp",title:"W8-D1-Sharp",activity:"Run",steps:[wu("10:00"),rep(6,[rn("00:30"),rec("00:45")]),cd("06:00")],notes:"آخر جرعة شدّة. ضعها قبل ≥٧٢ ساعة من موعد الاختبار. حادّة لكن قصيرة."}]},
       {name:"الثلاثاء",focus:"جري هادئ قصير",zone:"z2",workouts:[{id:"W8-D2-Easy",title:"W8-D2-Easy",activity:"Run",steps:[wu("05:00"),run("20:00","z2"),cdl("05:00")],notes:"٢٠ دقيقة خفيفة تُبقي التدفّق دون أي إجهاد."}]},
       {name:"الخميس",focus:"هرولة تنشيطية قصيرة (اليوم السابق للاختبار)",zone:"z2",workouts:[{id:"W8-D3-Shakeout",title:"W8-D3-Shakeout",activity:"Run",steps:[wu("04:00"),run("12:00","z2"),cdl("04:00")],notes:"تنشيط خفيف جدًا قبل الاختبار بيوم. لا شدّة إطلاقًا — فقط لإيقاظ الجسم."}]},
-      {name:"٥ نوفمبر",focus:"يوم الاختبار الحقيقي — YYIR1",zone:"test",workouts:[testWkt("W8-D5-RealTest")]}
+      {name:"يوم الاختبار",realTest:true,focus:"يوم الاختبار الحقيقي — YYIR1",zone:"test",workouts:[testWkt("W8-D5-RealTest")]}
     ]}
   ];
 
@@ -573,10 +588,14 @@
   var ZONE_SOFT={z1:"--z1-soft",z2:"--z2-soft",z3:"--z3-soft",z4:"--z4-soft",z5:"--z5-soft",test:"--test-soft"};
 
   /* ---------- State ---------- */
-  var state={age:20,rhr:48,max:null,week:1,done:{}};
+  var state={age:20,rhr:48,max:null,week:1,done:{},testDate:DEFAULT_DATE};
   try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&typeof s==="object"){
     if(s.age)state.age=+s.age; if(s.rhr)state.rhr=+s.rhr; if(s.max)state.max=+s.max;
-    if(s.week)state.week=+s.week; if(s.done)state.done=s.done;}}}catch(e){}
+    if(s.week)state.week=+s.week; if(s.done)state.done=s.done;
+    if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;}}}catch(e){}
+
+  function testDate(){var d=new Date(state.testDate+"T00:00:00");return isNaN(d)?new Date(DEFAULT_DATE+"T00:00:00"):d;}
+  function fmtDate(iso){try{return new Intl.DateTimeFormat("ar-u-ca-gregory",{day:"numeric",month:"long",year:"numeric"}).format(new Date(iso+"T00:00:00"));}catch(e){return iso;}}
   function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
 
   /* ---------- Zones ---------- */
@@ -746,13 +765,14 @@
         grid.appendChild(rc);
         return;
       }
+      var dname=day.realTest?fmtDate(state.testDate):day.name;
       (day.workouts||[]).forEach(function(w,idx){
         var card=el("div","card");
         var zvar=ZONE_VAR[w.zone||day.zone||"z2"];
         var stripe=el("div","stripe");stripe.style.background="var("+zvar+")";card.appendChild(stripe);
         var ch=el("div","ch");
         var left=el("div");
-        left.appendChild(el("div","day",idx===0?day.name:day.name+" · إضافة"));
+        left.appendChild(el("div","day",idx===0?dname:dname+" · إضافة"));
         left.appendChild(el("div","focus",w.optional?"سبرنتات RSA — تخصّصية (اختياري)":day.focus));
         ch.appendChild(left);
         var chip=el("span","chip",ZONE_LABEL[w.zone||day.zone]);
@@ -805,8 +825,14 @@
   /* ---------- Countdown ---------- */
   function renderCountdown(){
     var now=new Date();now.setHours(0,0,0,0);
-    var diff=Math.ceil((TEST_DATE-now)/86400000);
-    document.getElementById("countdown").textContent=diff>0?diff:(diff===0?"اليوم":"—");
+    var diff=Math.ceil((testDate()-now)/86400000);
+    var elc=document.getElementById("countdown");
+    var lbl=elc.previousElementSibling; // "يتبقّى على الاختبار"
+    var suf=elc.nextElementSibling;     // "يوم"
+    if(diff<0){elc.textContent="انتهى";if(lbl)lbl.textContent="مضى موعد";if(suf)suf.hidden=true;}
+    else if(diff===0){elc.textContent="اليوم";if(lbl)lbl.textContent="موعد الاختبار";if(suf)suf.hidden=true;}
+    else{elc.textContent=diff;if(lbl)lbl.textContent="يتبقّى على الاختبار";if(suf)suf.hidden=false;}
+    var ld=document.getElementById("lede-date");if(ld)ld.textContent=fmtDate(state.testDate);
   }
 
   /* ---------- Inputs ---------- */
@@ -814,6 +840,7 @@
     document.getElementById("in-age").value=state.age;
     document.getElementById("in-rhr").value=state.rhr;
     document.getElementById("in-max").value=state.max||"";
+    document.getElementById("in-date").value=state.testDate;
   }
   function onInput(){
     var a=+document.getElementById("in-age").value;
@@ -914,6 +941,9 @@
     var b=this;if(navigator.clipboard){navigator.clipboard.writeText(FIT).then(function(){b.textContent="✓ نُسخ";setTimeout(function(){b.textContent="⧉ نسخ السكربت";},1600);});}
   });
   ["in-age","in-rhr","in-max"].forEach(function(id){document.getElementById(id).addEventListener("input",onInput);});
+  document.getElementById("in-date").addEventListener("change",function(){
+    var v=this.value;if(v&&/^\d{4}-\d{2}-\d{2}$/.test(v)){state.testDate=v;save();renderCountdown();renderWeek();}
+  });
   document.getElementById("pg-reset").addEventListener("click",function(){
     if(window.confirm("تصفير كل علامات الإنجاز؟")){state.done={};save();renderRail();renderWeek();renderProgress();}
   });
