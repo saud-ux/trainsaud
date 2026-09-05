@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 على شكل تمارين Garmin مهيكلة، مع نطاقات نبض تفاعلية ومشغّل صافرات الاختبار ودليل إدخال.">
+<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 على شكل تمارين Garmin مهيكلة، مع نطاقات نبض تفاعلية ومشغّل صافرات الاختبار وشرح لكل تمرين.">
 <title>برنامج اليو‑يو</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f9d76">
@@ -260,6 +260,26 @@
 
   @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
   @media print{.topbar,.calc,.cf,.reset,.tbtn,.playcta{display:none!important}.card{break-inside:avoid}}
+
+  /* ===== Per-workout how-to explainer ===== */
+  .card{position:relative}
+  .infob{width:26px;height:26px;flex:0 0 auto;border-radius:50%;border:1.5px solid var(--line-2);
+    background:var(--bg);color:var(--accent-ink);font-family:var(--f-display);font-weight:900;font-size:15px;
+    cursor:pointer;display:grid;place-items:center;line-height:1;padding:0;margin-top:1px}
+  .infob:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .infob:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .infob[aria-expanded="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .howto{border-top:1px solid var(--line);background:var(--bg);padding:14px 18px;font-size:13px;color:var(--ink-2);
+    display:flex;flex-direction:column;gap:12px;animation:htin .18s ease}
+  @keyframes htin{from{opacity:.4}to{opacity:1}}
+  .howto .ht-p{color:var(--ink);line-height:1.6}
+  .howto h5{margin:0 0 7px;font-size:12.5px;color:var(--accent-ink);font-family:var(--f-display);font-weight:700}
+  .howto ol{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;line-height:1.6}
+  .howto ol b{color:var(--ink)}
+  .howto .ht-grid{display:grid;grid-template-columns:1fr;gap:9px}
+  .howto .ht-grid > div{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 12px}
+  .howto .ht-grid span{font-weight:700;color:var(--ink);font-size:12.5px;display:block;margin-bottom:3px}
+  .howto .ht-grid p{margin:0;line-height:1.55}
 
   /* ===== YYIR1 beep player ===== */
   .playcta{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;background:var(--surface);
@@ -728,6 +748,103 @@
   function weekWorkouts(wk){var arr=[];wk.days.forEach(function(d){(d.workouts||[]).forEach(function(w){arr.push(w);});});return arr;}
   function allWorkouts(){var a=[];WEEKS.forEach(function(wk){weekWorkouts(wk).forEach(function(w){a.push(w);});});return a;}
 
+  /* ---------- Per-workout how-to ---------- */
+  var HOWTO={
+    int3030:{purpose:"تطوير القدرة اللاهوائية وتحمّل تكرار الجهد القصير الشديد.",
+      steps:["أكمل خطوة الإحماء أولًا (ستهتزّ الساعة عند نهايتها).",
+        "<b>عند اهتزاز بداية العمل:</b> انطلق جريًا قويًا (جهد ٩ من ١٠) لمدة ٣٠ ثانية.",
+        "<b>عند الاهتزاز التالي:</b> خفّف إلى جري خفيف جدًا أو مشي سريع ٣٠ ثانية.",
+        "كرّر النمط حتى ينتهي عدد الجولات، ثم تبدأ خطوة التهدئة تلقائيًا."],
+      vib:"كل اهتزازة تعني «بدّل»: جري قوي ↔ استشفاء. لا هدف نبض في الفترات، فلن تهتزّ الساعة إلا عند الانتقال.",
+      effort:"كل انطلاقة بنفس القوة من الأولى للأخيرة. لو هبطت قوتك بوضوح في آخر جولتين فتلك حدّك اليوم.",
+      mistake:"لا تبدأ بأقصى سرعة في أول جولة ثم تنهار — وزّع جهدك بثبات."},
+    tempo:{purpose:"رفع العتبة اللاكتاتية لتتحمّل شدّة عالية مدّةً أطول.",
+      steps:["بعد الإحماء، ابدأ جريًا متواصلًا بوتيرة «صعبة لكن مستقرّة».",
+        "أبقِ نبضك داخل نطاق العتبة (الأصفر) طوال المدّة.",
+        "لا توقّفات إطلاقًا — جرٍ متّصل حتى خطوة التهدئة."],
+      vib:"ستهتزّ الساعة إن هبط نبضك تحت النطاق (زد قليلًا) أو تجاوزه (خفّف). اضبط وتيرتك على الاهتزاز.",
+      effort:"الإحساس الصحيح: تستطيع نطق ٣–٤ كلمات فقط، لا جملة كاملة.",
+      mistake:"لا تبدأ سريعًا جدًا فتضطر للتوقّف؛ ابدأ محسوبًا وثابتًا."},
+    yoyo:{purpose:"محاكاة مباشرة لاختبار اليو‑يو: جري متقطّع مع استشفاء ناقص.",
+      steps:["ضع علامتين تجري بينهما ذهابًا وإيابًا (نحو ٢٠م لكل اتجاه).",
+        "<b>عند اهتزاز العمل:</b> اجرِ بسرعة عالية ثابتة طوال ثواني العمل.",
+        "<b>عند الاهتزاز:</b> استشفِ بجري خفيف أو مشي طوال ثواني الاستشفاء (لا تقف تمامًا).",
+        "كرّر حتى نهاية الجولات ثم التهدئة."],
+      vib:"اهتزازة تبدأ الجري السريع، وأخرى تبدأ الاستشفاء. ركّز على ثبات سرعتك في كل جولة.",
+      effort:"استهدف سرعة تستطيع تكرارها لكل الجولات؛ الجولة الأخيرة يجب أن تشبه الأولى.",
+      mistake:"لا تستغلّ الاستشفاء بالوقوف — الاستشفاء النشط جزء من التكيّف."},
+    easylong:{purpose:"بناء القاعدة الهوائية والاقتصاد في الجري.",
+      steps:["اجرِ بوتيرة مريحة جدًا تُبقي نبضك في المنطقة ٢ (الأخضر) طوال الوقت.",
+        "لو ارتفع النبض فوق النطاق: امشِ حتى يهبط ثم استأنف.",
+        "حافظ على الاستمرارية دون توقّف طويل حتى التهدئة."],
+      vib:"ستهتزّ الساعة لو خرجت من النطاق الهادئ — أبقِ الجهد منخفضًا.",
+      effort:"تستطيع التحدّث بجُمل كاملة بلا لهاث.",
+      mistake:"أكبر خطأ: جعله سريعًا. هذا اليوم للقاعدة والاستشفاء لا للسباق."},
+    vo2:{purpose:"رفع سقف استهلاك الأكسجين الأقصى (VO2max).",
+      steps:["بعد الإحماء، <b>عند اهتزاز العمل:</b> اجرِ ١٥ ثانية بجهد قوي جدًا (قرب الأقصى).",
+        "<b>عند الاهتزاز:</b> ١٥ ثانية جري خفيف.",
+        "في تمرين المجموعتين، خذ الدقيقتين بينهما جريًا خفيفًا أو مشيًا.",
+        "كرّر حتى النهاية ثم التهدئة."],
+      vib:"اهتزازة = بدّل. الفترات قصيرة جدًا فلا هدف نبض — اعتمد على إحساسك بالجهد.",
+      effort:"أقوى من فترات ٣٠/٣٠ لكن لمدّة أقصر — تنفّس عميق متوقّع.",
+      mistake:"لا تُبطئ العمل لدرجة الهرولة، ولا تقف تمامًا في الاستشفاء."},
+    sharp:{purpose:"إبقاء الحِدّة العضلية‑العصبية دون إرهاق (شحذ قبل اختبار أو تخفيف).",
+      steps:["٦ انطلاقات قوية ٣٠ ثانية فقط.",
+        "راحة أطول (٤٥ ثانية) بين الانطلاقات — استشفِ جيدًا.",
+        "أنهِ التمرين منتعشًا، لا مُنهكًا."],
+      vib:"اهتزازة = انطلق، اهتزازة = استشفِ. قليلة ومركّزة.",
+      effort:"قوي وسريع لكن قصير؛ لا تُطارد التعب.",
+      mistake:"لا تزد عدد الجولات — هذا يوم شحذ لا يوم حِمل."},
+    rsa:{purpose:"قدرة السبرنت المتكرّر — تخصّصية جدًا لتحرّكات الحكم في المباراة.",
+      steps:["حدّد مسافة نحو ٤٠ مترًا.",
+        "<b>عند اهتزاز العمل:</b> انطلق سبرنت بأقصى سرعة (~٨ ثوانٍ).",
+        "٢٠ ثانية راحة (مشي/وقوف) للعودة والاستعداد.",
+        "٦ تكرارات. نفّذها وأنت غير مُنهك لأقصى فائدة."],
+      vib:"اهتزازة تبدأ السبرنت، وأخرى تبدأ الراحة.",
+      effort:"أقصى سرعة في كل تكرار؛ حافظ على بقاء آخر سبرنت قريبًا من الأول.",
+      mistake:"لا تُقصّر الراحة — السبرنت الحقيقي يحتاج تعافيًا شبه كامل."},
+    easy:{purpose:"استشفاء نشط وتنشيط الدورة الدموية.",
+      steps:["جرٍ خفيف جدًا داخل المنطقة ٢ (الأخضر).",
+        "لا شدّة إطلاقًا؛ الهدف تسريع التعافي حتى التهدئة."],
+      vib:"تهتزّ الساعة لو رفعت الجهد فوق الهادئ — أبقِه منخفضًا.",
+      effort:"مريح تمامًا؛ تنهيه وأنت أنشط ممّا بدأت.",
+      mistake:"تحويله إلى تمرين جادّ — ليس كذلك."},
+    shakeout:{purpose:"إيقاظ الجسم قبل الاختبار بيوم دون أي تعب.",
+      steps:["هرولة خفيفة جدًا وقصيرة داخل المنطقة ٢.",
+        "يمكن إضافة ٢–٣ تسارعات قصيرة خفيفة (اختياري).",
+        "انتهِ منتعشًا تمامًا."],
+      vib:"أبقِ الجهد ضمن الهادئ؛ الاهتزاز ينبّهك لو زدت.",
+      effort:"خفيف جدًا — لا يُتعب إطلاقًا.",
+      mistake:"لا تختبر لياقتك اليوم؛ وفّرها للاختبار غدًا."},
+    test:{purpose:"قياس تقدّمك بالبروتوكول الكامل (نتيجتك = المسافة عند العجز).",
+      steps:["أكمل الإحماء (١٢ دقيقة، تقودك الخطوة بالنبض).",
+        "<b>اضغط زر اللفة (Lap):</b> عُد للجوال، افتح «مشغّل صافرات YYIR1»، ارجع لخط البداية.",
+        "<b>اضغط Lap لبدء خطوة الاختبار</b>، ثم اتبع الصافرات جريًا ذهابًا وإيابًا حتى العجز.",
+        "عند توقّفك اضغط Lap، وسجّل «المسافة» الظاهرة في المشغّل — هي نتيجتك.",
+        "أكمل خطوة التهدئة."],
+      vib:"لا هدف نبض هنا؛ الصوت يقودك والساعة تسجّل فقط. اهتزاز Lap يؤكّد الانتقال بين الخطوات.",
+      effort:"ادفع حتى العجز الحقيقي، خصوصًا في المستويات الأخيرة.",
+      mistake:"لا توقف الساعة بالخطأ بدل Lap — تدرّب على الأزرار قبل يوم الاختبار."}
+  };
+  function typeOf(w){var id=w.id||"";
+    if(/Tempo/.test(id))return"tempo"; if(/YoYo/.test(id))return"yoyo";
+    if(/EasyLong/.test(id))return"easylong"; if(/VO2/.test(id))return"vo2";
+    if(/Sharp/.test(id))return"sharp"; if(/RSA/.test(id))return"rsa";
+    if(/Shakeout/.test(id))return"shakeout"; if(/Test/.test(id))return"test";
+    if(/Easy/.test(id))return"easy"; return"int3030";}
+  function buildHowto(type){
+    var h=HOWTO[type]||HOWTO.int3030; var wrap=el("div","howto");wrap.hidden=true;
+    wrap.appendChild(el("div","ht-p","🎯 <b>الهدف:</b> "+h.purpose));
+    var sec=el("div");sec.appendChild(el("h5",null,"في الملعب — خطوة بخطوة"));
+    var ol=document.createElement("ol");h.steps.forEach(function(s){var li=document.createElement("li");li.innerHTML=s;ol.appendChild(li);});
+    sec.appendChild(ol);wrap.appendChild(sec);
+    var grid=el("div","ht-grid");
+    grid.appendChild(el("div",null,"<span>📳 الاهتزاز</span><p>"+h.vib+"</p>"));
+    grid.appendChild(el("div",null,"<span>🔥 الشدّة</span><p>"+h.effort+"</p>"));
+    grid.appendChild(el("div",null,"<span>⚠️ تجنّب</span><p>"+h.mistake+"</p>"));
+    wrap.appendChild(grid);return wrap;
+  }
+
   /* ---------- Render: zone meter ---------- */
   function renderMeter(){
     var host=document.getElementById("zmeter");host.innerHTML="";
@@ -868,6 +985,10 @@
         var zvar=ZONE_VAR[w.zone||day.zone||"z2"];
         var stripe=el("div","stripe");stripe.style.background="var("+zvar+")";card.appendChild(stripe);
         var ch=el("div","ch");
+        var info=el("button","infob");info.type="button";info.textContent="!";
+        info.setAttribute("aria-label","شرح التمرين: ماذا أفعل بالضبط");info.setAttribute("aria-expanded","false");
+        info.setAttribute("title","شرح التمرين");
+        ch.appendChild(info);
         var left=el("div");
         left.appendChild(el("div","day",idx===0?dname:dname+" · إضافة"));
         left.appendChild(el("div","focus",w.optional?"سبرنتات RSA — تخصّصية (اختياري)":day.focus));
@@ -877,6 +998,10 @@
         chip.style.color="var("+ZONE_VAR[w.zone||day.zone]+")";
         ch.appendChild(chip);
         card.appendChild(ch);
+
+        var howto=buildHowto(typeOf(w));card.appendChild(howto);
+        info.addEventListener("click",function(){var show=howto.hidden;howto.hidden=!show;
+          info.setAttribute("aria-expanded",show?"true":"false");});
 
         var body=el("div","body");
         var wid=el("div","wid");
