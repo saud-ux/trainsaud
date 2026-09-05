@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 على شكل تمارين Garmin مهيكلة، مع نطاقات نبض تفاعلية ومشغّل صافرات الاختبار وشرح لكل تمرين.">
+<meta name="description" content="برنامج تدريب 8 أسابيع لاجتياز اختبار Yo-Yo IR1 مع مشغّل صافرات الاختبار الحقيقي المتزامن، ونطاقات نبض وشرح لكل تمرين.">
 <title>برنامج اليو‑يو</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f9d76">
@@ -604,8 +604,8 @@
         </div>
         <div class="prow"><label for="yy-vol">الصوت</label>
           <input id="yy-vol" type="range" min="0" max="100" value="80">
-          <button class="pbtn" id="yy-test" type="button" style="flex:0 0 auto;min-width:0;padding:9px 12px;font-size:13px">اختبار الصوت</button></div>
-        <p class="pnote">البروتوكول: جري ذهاب‑إياب ٢٠م (=٤٠م) على إيقاع الصافرة، يليه ١٠ ثوانٍ استشفاء (٥م×٢). الصافرة تعني «كن عند الخط». نغمة مزدوجة تنبّهك قبل انطلاق كل شوط، ونغمة صاعدة عند تغيّر المستوى. عند توقّفك، سجّل «المسافة» الظاهرة — هي نتيجتك.<br>هذه أداة تدريب تتّبع مواصفات YYIR1 القياسية؛ للاختبار الرسمي الحاسم راجع مصدرًا معتمدًا.</p>
+          <button class="pbtn" id="yy-test" type="button" style="flex:0 0 auto;min-width:0;padding:9px 12px;font-size:13px">⏭ تخطّي المقدّمة</button></div>
+        <p class="pnote">هذا التسجيل الصوتي الرسمي: تسمع التعليمات ثم صافرات الاختبار. الجولة = جري ذهاب‑إياب ٢٠م على إيقاع الصافرة، يليها ≈٥ ثوانٍ استشفاء خفيف. الشاشة تتزامن مع الصوت وتعرض المستوى والسرعة والمسافة لحظيًا. الصافرة تعني «كن عند الخط». عند توقّفك سجّل «المسافة» الظاهرة — هي نتيجتك.<br>ضع الجوال جانب الملعب بصوتٍ مرتفع، ولا تحتاج لمسه بعد الضغط على ابدأ.</p>
         <div class="plevels" id="yy-levels"></div>
       </div>
     </div>
@@ -1182,114 +1182,83 @@
 </script>
 
 <script>
-/* ===== YYIR1 beep-player engine ===== */
+window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":40.56,"td":4480,"lv":[[1,40.56,11.5,1,0,40],[2,58.14,12.5,2,40,120],[3,91.28,13.5,2,120,200],[4,122.71,14,16,200,840],[5,366.57,14.5,11,840,1280],[6,530.8,15,9,1280,1640],[7,661.64,15.5,12,1640,2120],[8,832.74,16,12,2120,2600],[9,1000.39,16.5,12,2600,3080],[10,1164.8,17,12,3080,3560],[11,1326.16,17.5,12,3560,4040],[12,1484.65,18,11,4040,4480]],"sg":[[40.56,1,11.5,1,0,1],[46.84,1,11.5,1,20,1],[53.12,0,11.5,1,40,1],[58.14,1,12.5,2,40,2],[63.92,1,12.5,2,60,2],[69.69,0,12.5,2,80,2],[74.71,1,12.5,2,80,3],[80.49,1,12.5,2,100,3],[86.26,0,12.5,2,120,3],[91.28,1,13.5,3,120,4],[96.63,1,13.5,3,140,4],[101.98,0,13.5,3,160,4],[107,1,13.5,3,160,5],[112.35,1,13.5,3,180,5],[117.69,0,13.5,3,200,5],[122.71,1,14,4,200,6],[127.87,1,14,4,220,6],[133.03,0,14,4,240,6],[138.04,1,14,4,240,7],[143.2,1,14,4,260,7],[148.36,0,14,4,280,7],[153.37,1,14,4,280,8],[158.53,1,14,4,300,8],[163.69,0,14,4,320,8],[168.71,1,14,4,320,9],[173.86,1,14,4,340,9],[179.02,0,14,4,360,9],[184.04,1,14,4,360,10],[189.2,1,14,4,380,10],[194.35,0,14,4,400,10],[199.37,1,14,4,400,11],[204.53,1,14,4,420,11],[209.68,0,14,4,440,11],[214.7,1,14,4,440,12],[219.86,1,14,4,460,12],[225.02,0,14,4,480,12],[230.03,1,14,4,480,13],[235.19,1,14,4,500,13],[240.35,0,14,4,520,13],[245.36,1,14,4,520,14],[250.43,1,14,4,540,14],[255.5,0,14,4,560,14],[260.51,1,14,4,560,15],[265.58,1,14,4,580,15],[270.65,0,14,4,600,15],[275.66,1,14,4,600,16],[280.73,1,14,4,620,16],[285.8,0,14,4,640,16],[290.81,1,14,4,640,17],[295.88,1,14,4,660,17],[300.95,0,14,4,680,17],[305.97,1,14,4,680,18],[311.03,1,14,4,700,18],[316.1,0,14,4,720,18],[321.12,1,14,4,720,19],[326.18,1,14,4,740,19],[331.25,0,14,4,760,19],[336.27,1,14,4,760,20],[341.33,1,14,4,780,20],[346.4,0,14,4,800,20],[351.42,1,14,4,800,21],[356.49,1,14,4,820,21],[361.55,0,14,4,840,21],[366.57,1,14.5,5,840,22],[371.55,1,14.5,5,860,22],[376.53,0,14.5,5,880,22],[381.55,1,14.5,5,880,23],[386.53,1,14.5,5,900,23],[391.51,0,14.5,5,920,23],[396.52,1,14.5,5,920,24],[401.5,1,14.5,5,940,24],[406.48,0,14.5,5,960,24],[411.5,1,14.5,5,960,25],[416.48,1,14.5,5,980,25],[421.46,0,14.5,5,1000,25],[426.47,1,14.5,5,1000,26],[431.45,1,14.5,5,1020,26],[436.43,0,14.5,5,1040,26],[441.45,1,14.5,5,1040,27],[446.43,1,14.5,5,1060,27],[451.41,0,14.5,5,1080,27],[456.42,1,14.5,5,1080,28],[461.4,1,14.5,5,1100,28],[466.38,0,14.5,5,1120,28],[471.4,1,14.5,5,1120,29],[476.38,1,14.5,5,1140,29],[481.36,0,14.5,5,1160,29],[486.37,1,14.5,5,1160,30],[491.27,1,14.5,5,1180,30],[496.17,0,14.5,5,1200,30],[501.18,1,14.5,5,1200,31],[506.08,1,14.5,5,1220,31],[510.97,0,14.5,5,1240,31],[515.99,1,14.5,5,1240,32],[520.88,1,14.5,5,1260,32],[525.78,0,14.5,5,1280,32],[530.8,1,15,6,1280,33],[535.61,1,15,6,1300,33],[540.42,0,15,6,1320,33],[545.44,1,15,6,1320,34],[550.25,1,15,6,1340,34],[555.07,0,15,6,1360,34],[560.08,1,15,6,1360,35],[564.9,1,15,6,1380,35],[569.71,0,15,6,1400,35],[574.73,1,15,6,1400,36],[579.46,1,15,6,1420,36],[584.2,0,15,6,1440,36],[589.21,1,15,6,1440,37],[593.95,1,15,6,1460,37],[598.68,0,15,6,1480,37],[603.7,1,15,6,1480,38],[608.43,1,15,6,1500,38],[613.17,0,15,6,1520,38],[618.18,1,15,6,1520,39],[622.92,1,15,6,1540,39],[627.65,0,15,6,1560,39],[632.67,1,15,6,1560,40],[637.4,1,15,6,1580,40],[642.14,0,15,6,1600,40],[647.15,1,15,6,1600,41],[651.89,1,15,6,1620,41],[656.62,0,15,6,1640,41],[661.64,1,15.5,7,1640,42],[666.3,1,15.5,7,1660,42],[670.96,0,15.5,7,1680,42],[675.97,1,15.5,7,1680,43],[680.63,1,15.5,7,1700,43],[685.29,0,15.5,7,1720,43],[690.3,1,15.5,7,1720,44],[694.96,1,15.5,7,1740,44],[699.62,0,15.5,7,1760,44],[704.64,1,15.5,7,1760,45],[709.29,1,15.5,7,1780,45],[713.95,0,15.5,7,1800,45],[718.97,1,15.5,7,1800,46],[723.63,1,15.5,7,1820,46],[728.29,0,15.5,7,1840,46],[733.3,1,15.5,7,1840,47],[737.96,1,15.5,7,1860,47],[742.62,0,15.5,7,1880,47],[747.63,1,15.5,7,1880,48],[752.22,1,15.5,7,1900,48],[756.8,0,15.5,7,1920,48],[761.82,1,15.5,7,1920,49],[766.4,1,15.5,7,1940,49],[770.99,0,15.5,7,1960,49],[776,1,15.5,7,1960,50],[780.59,1,15.5,7,1980,50],[785.17,0,15.5,7,2000,50],[790.19,1,15.5,7,2000,51],[794.77,1,15.5,7,2020,51],[799.36,0,15.5,7,2040,51],[804.37,1,15.5,7,2040,52],[808.96,1,15.5,7,2060,52],[813.54,0,15.5,7,2080,52],[818.56,1,15.5,7,2080,53],[823.14,1,15.5,7,2100,53],[827.73,0,15.5,7,2120,53],[832.74,1,16,8,2120,54],[837.26,1,16,8,2140,54],[841.77,0,16,8,2160,54],[846.78,1,16,8,2160,55],[851.3,1,16,8,2180,55],[855.81,0,16,8,2200,55],[860.82,1,16,8,2200,56],[865.34,1,16,8,2220,56],[869.85,0,16,8,2240,56],[874.87,1,16,8,2240,57],[879.38,1,16,8,2260,57],[883.89,0,16,8,2280,57],[888.91,1,16,8,2280,58],[893.42,1,16,8,2300,58],[897.93,0,16,8,2320,58],[902.95,1,16,8,2320,59],[907.46,1,16,8,2340,59],[911.98,0,16,8,2360,59],[916.99,1,16,8,2360,60],[921.43,1,16,8,2380,60],[925.88,0,16,8,2400,60],[930.89,1,16,8,2400,61],[935.33,1,16,8,2420,61],[939.78,0,16,8,2440,61],[944.79,1,16,8,2440,62],[949.23,1,16,8,2460,62],[953.68,0,16,8,2480,62],[958.69,1,16,8,2480,63],[963.14,1,16,8,2500,63],[967.58,0,16,8,2520,63],[972.59,1,16,8,2520,64],[977.04,1,16,8,2540,64],[981.48,0,16,8,2560,64],[986.49,1,16,8,2560,65],[990.94,1,16,8,2580,65],[995.38,0,16,8,2600,65],[1000.39,1,16.5,9,2600,66],[1004.77,1,16.5,9,2620,66],[1009.15,0,16.5,9,2640,66],[1014.16,1,16.5,9,2640,67],[1018.54,1,16.5,9,2660,67],[1022.91,0,16.5,9,2680,67],[1027.93,1,16.5,9,2680,68],[1032.3,1,16.5,9,2700,68],[1036.68,0,16.5,9,2720,68],[1041.69,1,16.5,9,2720,69],[1046.07,1,16.5,9,2740,69],[1050.45,0,16.5,9,2760,69],[1055.46,1,16.5,9,2760,70],[1059.84,1,16.5,9,2780,70],[1064.21,0,16.5,9,2800,70],[1069.22,1,16.5,9,2800,71],[1073.6,1,16.5,9,2820,71],[1077.98,0,16.5,9,2840,71],[1082.99,1,16.5,9,2840,72],[1087.3,1,16.5,9,2860,72],[1091.61,0,16.5,9,2880,72],[1096.63,1,16.5,9,2880,73],[1100.93,1,16.5,9,2900,73],[1105.25,0,16.5,9,2920,73],[1110.26,1,16.5,9,2920,74],[1114.57,1,16.5,9,2940,74],[1118.88,0,16.5,9,2960,74],[1123.89,1,16.5,9,2960,75],[1128.21,1,16.5,9,2980,75],[1132.52,0,16.5,9,3000,75],[1137.53,1,16.5,9,3000,76],[1141.84,1,16.5,9,3020,76],[1146.15,0,16.5,9,3040,76],[1151.16,1,16.5,9,3040,77],[1155.48,1,16.5,9,3060,77],[1159.79,0,16.5,9,3080,77],[1164.8,1,17,10,3080,78],[1169.05,1,17,10,3100,78],[1173.29,0,17,10,3120,78],[1178.31,1,17,10,3120,79],[1182.56,1,17,10,3140,79],[1186.8,0,17,10,3160,79],[1191.82,1,17,10,3160,80],[1196.07,1,17,10,3180,80],[1200.31,0,17,10,3200,80],[1205.33,1,17,10,3200,81],[1209.57,1,17,10,3220,81],[1213.82,0,17,10,3240,81],[1218.84,1,17,10,3240,82],[1223.08,1,17,10,3260,82],[1227.33,0,17,10,3280,82],[1232.34,1,17,10,3280,83],[1236.59,1,17,10,3300,83],[1240.84,0,17,10,3320,83],[1245.85,1,17,10,3320,84],[1250.04,1,17,10,3340,84],[1254.22,0,17,10,3360,84],[1259.24,1,17,10,3360,85],[1263.42,1,17,10,3380,85],[1267.61,0,17,10,3400,85],[1272.62,1,17,10,3400,86],[1276.81,1,17,10,3420,86],[1280.99,0,17,10,3440,86],[1286.01,1,17,10,3440,87],[1290.19,1,17,10,3460,87],[1294.38,0,17,10,3480,87],[1299.39,1,17,10,3480,88],[1303.58,1,17,10,3500,88],[1307.76,0,17,10,3520,88],[1312.77,1,17,10,3520,89],[1316.96,1,17,10,3540,89],[1321.14,0,17,10,3560,89],[1326.16,1,17.5,11,3560,90],[1330.28,1,17.5,11,3580,90],[1334.41,0,17.5,11,3600,90],[1339.43,1,17.5,11,3600,91],[1343.55,1,17.5,11,3620,91],[1347.68,0,17.5,11,3640,91],[1352.69,1,17.5,11,3640,92],[1356.82,1,17.5,11,3660,92],[1360.94,0,17.5,11,3680,92],[1365.96,1,17.5,11,3680,93],[1370.08,1,17.5,11,3700,93],[1374.21,0,17.5,11,3720,93],[1379.22,1,17.5,11,3720,94],[1383.35,1,17.5,11,3740,94],[1387.47,0,17.5,11,3760,94],[1392.49,1,17.5,11,3760,95],[1396.61,1,17.5,11,3780,95],[1400.74,0,17.5,11,3800,95],[1405.75,1,17.5,11,3800,96],[1409.82,1,17.5,11,3820,96],[1413.89,0,17.5,11,3840,96],[1418.9,1,17.5,11,3840,97],[1422.97,1,17.5,11,3860,97],[1427.04,0,17.5,11,3880,97],[1432.05,1,17.5,11,3880,98],[1436.12,1,17.5,11,3900,98],[1440.19,0,17.5,11,3920,98],[1445.2,1,17.5,11,3920,99],[1449.27,1,17.5,11,3940,99],[1453.34,0,17.5,11,3960,99],[1458.35,1,17.5,11,3960,100],[1462.42,1,17.5,11,3980,100],[1466.49,0,17.5,11,4000,100],[1471.5,1,17.5,11,4000,101],[1475.57,1,17.5,11,4020,101],[1479.63,0,17.5,11,4040,101],[1484.65,1,18,12,4040,102],[1488.66,1,18,12,4060,102],[1492.67,0,18,12,4080,102],[1497.69,1,18,12,4080,103],[1501.7,1,18,12,4100,103],[1505.71,0,18,12,4120,103],[1510.72,1,18,12,4120,104],[1514.73,1,18,12,4140,104],[1518.75,0,18,12,4160,104],[1523.76,1,18,12,4160,105],[1527.77,1,18,12,4180,105],[1531.78,0,18,12,4200,105],[1536.8,1,18,12,4200,106],[1540.81,1,18,12,4220,106],[1544.82,0,18,12,4240,106],[1549.83,1,18,12,4240,107],[1553.84,1,18,12,4260,107],[1557.86,0,18,12,4280,107],[1562.87,1,18,12,4280,108],[1566.83,1,18,12,4300,108],[1570.78,0,18,12,4320,108],[1575.79,1,18,12,4320,109],[1579.75,1,18,12,4340,109],[1583.71,0,18,12,4360,109],[1588.72,1,18,12,4360,110],[1592.68,1,18,12,4380,110],[1596.63,0,18,12,4400,110],[1601.65,1,18,12,4400,111],[1605.6,1,18,12,4420,111],[1609.56,0,18,12,4440,111],[1614.57,1,18,12,4440,112],[1618.53,1,18,12,4460,112],[1622.49,0,18,12,4480,112]]};
+/* ===== YYIR1 player — real audio recording, screen synced to detected timeline ===== */
 (function(){
   "use strict";
-  // مستويات YYIR1 القياسية: السرعة (km/h) وعدد أشواط الـ40م في كل مستوى
-  var LEVELS=[
-    {spd:10.0,n:1},{spd:12.0,n:1},{spd:13.0,n:2},{spd:13.5,n:3},{spd:14.0,n:4},
-    {spd:14.5,n:8},{spd:15.0,n:8},{spd:15.5,n:8},{spd:16.0,n:8},{spd:16.5,n:8},
-    {spd:17.0,n:8},{spd:17.5,n:8},{spd:18.0,n:8},{spd:18.5,n:8},{spd:19.0,n:8},
-    {spd:19.5,n:8},{spd:20.0,n:8}
-  ];
-  var EVENTS=[], SEG=[], TOTAL=0, LVLINFO=[];
-  (function build(){
-    var t=0, shut=0, dist=0;
-    for(var i=0;i<LEVELS.length;i++){
-      var v=LEVELS[i].spd, seg=72/v; // زمن قطع 20م بالثواني = 72/السرعة
-      LVLINFO.push({idx:i,spd:v,n:LEVELS[i].n,fromDist:dist,toDist:dist+LEVELS[i].n*40});
-      for(var s=0;s<LEVELS[i].n;s++){
-        var lu=(s===0);
-        EVENTS.push({time:t,kind:"go",levelup:lu,levelIdx:i});
-        SEG.push({start:t,end:t+seg,phase:"run",levelIdx:i,speed:v,shuttle:shut+1,dist:dist,part:"ذهاب"});
-        EVENTS.push({time:t+seg,kind:"turn"});
-        SEG.push({start:t+seg,end:t+2*seg,phase:"run",levelIdx:i,speed:v,shuttle:shut+1,dist:dist,part:"إياب"});
-        var tb=t+2*seg; shut++; dist+=40;
-        EVENTS.push({time:tb,kind:"back"});
-        SEG.push({start:tb,end:tb+10,phase:"rec",levelIdx:i,speed:v,shuttle:shut,dist:dist});
-        EVENTS.push({time:tb+8,kind:"prep"});
-        t=tb+10;
-      }
-    }
-    EVENTS.sort(function(a,b){return a.time-b.time;});
-    TOTAL=SEG.length?SEG[SEG.length-1].end:0;
-  })();
-
-  var actx=null, master=null, vol=0.8;
-  function ensure(){
-    if(!actx){var AC=window.AudioContext||window.webkitAudioContext; if(!AC)return false;
-      actx=new AC(); master=actx.createGain(); master.gain.value=vol; master.connect(actx.destination);}
-    if(actx.state==="suspended")actx.resume(); return true;
-  }
-  function beep(at,freq,dur,type){
-    if(!actx)return; var o=actx.createOscillator(),g=actx.createGain();
-    o.type=type||"sine"; o.frequency.value=freq; o.connect(g); g.connect(master);
-    var s=Math.max(at,actx.currentTime);
-    g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(1,s+0.006);
-    g.gain.setValueAtTime(1,s+Math.max(dur-0.03,0.02)); g.gain.linearRampToValueAtTime(0,s+dur);
-    o.start(s); o.stop(s+dur+0.03);
-  }
-  function say(i){try{if(!("speechSynthesis"in window))return;var u=new SpeechSynthesisUtterance("المستوى "+(i+1));
-    u.lang="ar-SA";u.rate=1;u.volume=Math.min(1,vol+0.1);window.speechSynthesis.cancel();window.speechSynthesis.speak(u);}catch(e){}}
-  function sound(ev,at){
-    if(ev.kind==="go"){ if(ev.levelup){beep(at,700,0.13);beep(at+0.17,1150,0.18);say(ev.levelIdx);} else {beep(at,1000,0.12);} }
-    else if(ev.kind==="turn"||ev.kind==="back"){ beep(at,1000,0.10); }
-    else if(ev.kind==="prep"){ beep(at,1500,0.07,"square"); beep(at+0.13,1500,0.07,"square"); }
-  }
-
-  var started=false, playing=false, t0=0, evIdx=0, schedT=null, uiT=null;
+  var TL=window.__YOYO_TL||{a:"audio/yoyo.mp3",ts:0,td:0,lv:[],sg:[]};
+  var AUDIO_PRIMARY=TL.a||"audio/yoyo.mp3";
+  var AUDIO_FALLBACK=window.__YOYO_AUDIO_FALLBACK||""; // optional (artifact asset)
+  var SEG=TL.sg||[], LV=TL.lv||[];
   var $=function(id){return document.getElementById(id);};
+  var audio=null, raf=0, triedFallback=false;
 
-  function schedule(){ if(!playing||!actx)return; var ahead=actx.currentTime+0.25;
-    while(evIdx<EVENTS.length){ var ev=EVENTS[evIdx]; if(t0+ev.time<ahead){ sound(ev,t0+ev.time); evIdx++; } else break; } }
-  function segAt(el){ var lo=0,hi=SEG.length-1; if(el<0)return null; if(el>=TOTAL)return null;
-    while(lo<hi){var m=(lo+hi)>>1; if(SEG[m].end<=el)lo=m+1;else hi=m;} return SEG[lo]; }
-  function renderLevels(curIdx){ var host=$("yy-levels");
-    if(host.getAttribute("data-built")!=="1"){ host.innerHTML=""; LVLINFO.forEach(function(L){
-      var d=document.createElement("div"); d.setAttribute("data-lv",L.idx);
-      d.innerHTML='<span>مستوى '+(L.idx+1)+' · '+L.spd.toFixed(1)+' km/h</span><span>حتى '+L.toDist+' م</span>';
-      host.appendChild(d);}); host.setAttribute("data-built","1"); }
-    Array.prototype.forEach.call(host.children,function(c){c.classList.toggle("cur",+c.getAttribute("data-lv")===curIdx);});
+  function makeAudio(src){
+    var a=new Audio(); a.preload="auto"; a.src=src;
+    try{a.volume=(+$("yy-vol").value)/100;}catch(e){}
+    a.addEventListener("error",function(){
+      if(!triedFallback&&AUDIO_FALLBACK){triedFallback=true;a.src=AUDIO_FALLBACK;a.load();}
+      else{$("yy-plab").textContent="تعذّر تحميل الصوت";$("yy-pbig").textContent="—";
+        $("yy-pnx").textContent="الصوت متاح على النسخة المنشورة (trainsaud.netlify.app).";}
+    });
+    a.addEventListener("ended",function(){stopLoop();ended();});
+    a.addEventListener("play",function(){btns();startLoop();});
+    a.addEventListener("pause",function(){btns();});
+    return a;
   }
-  function tick(){
-    if(!actx)return; var el=actx.currentTime-t0;
-    var ph=$("yy-phase");
-    if(el<0){ ph.style.background="var(--test)"; $("yy-plab").textContent="استعد"; $("yy-pbig").textContent=Math.ceil(-el)+""; $("yy-pnx").textContent="ابدأ عند الصافرة الطويلة"; $("yy-pfill").style.width="0%"; return; }
-    if(el>=TOTAL){ finish(); return; }
-    var sg=segAt(el); if(!sg)return; var run=sg.phase==="run";
-    ph.style.background="var("+(run?"--accent":"--z3")+")";
-    $("yy-plab").textContent=run?("اجرِ — "+sg.part):"استشفاء (جري خفيف)";
+  function ensureAudio(){ if(!audio)audio=makeAudio(AUDIO_PRIMARY); return audio; }
+
+  function segAt(t){ if(!SEG.length)return -1; var lo=0,hi=SEG.length-1,ans=-1;
+    while(lo<=hi){var m=(lo+hi)>>1; if(SEG[m][0]<=t){ans=m;lo=m+1;}else hi=m-1;} return ans; }
+  function fmtSpeed(s){return (Math.round(s*10)/10).toFixed(1);}
+
+  function update(){
+    if(!audio)return; var t=audio.currentTime; var ph=$("yy-phase");
+    var t0=SEG.length?SEG[0][0]:1e9;
+    if(t<t0){
+      ph.style.background="var(--test)";
+      $("yy-plab").textContent="استمع للتعليمات";
+      $("yy-pbig").textContent="استعد";
+      $("yy-pnx").textContent="الانطلاق بعد "+Math.max(0,t0-t).toFixed(0)+" ث · قف على خط البداية";
+      $("yy-pfill").style.width="0%";
+      $("yy-level").textContent="—";$("yy-speed").textContent="—";
+      $("yy-shut").textContent="0";$("yy-dist").textContent="0";
+      renderLevels(-1); return;
+    }
+    var i=segAt(t); if(i<0)return; var s=SEG[i], nx=SEG[i+1];
+    var run=s[1]===1; ph.style.background="var("+(run?"--accent":"--z3")+")";
+    $("yy-plab").textContent=run?"اجرِ":"استشفاء (جري خفيف)";
     $("yy-pbig").textContent=run?"اجرِ!":"استشفِ";
-    var into=el-sg.start, len=sg.end-sg.start, left=Math.max(0,len-into);
+    var segEnd=nx?nx[0]:s[0]+(run?2:5), len=segEnd-s[0], into=t-s[0], left=Math.max(0,segEnd-t);
     $("yy-pnx").textContent=(run?"الصافرة بعد ":"انطلاق بعد ")+left.toFixed(1)+" ث";
-    $("yy-pfill").style.width=Math.min(100,into/len*100)+"%";
-    $("yy-level").textContent=sg.levelIdx+1; $("yy-speed").textContent=sg.speed.toFixed(1);
-    $("yy-shut").textContent=sg.shuttle; $("yy-dist").textContent=sg.dist;
-    renderLevels(sg.levelIdx);
+    $("yy-pfill").style.width=Math.min(100,len>0?into/len*100:0)+"%";
+    $("yy-level").textContent=s[3];$("yy-speed").textContent=fmtSpeed(s[2]);
+    $("yy-shut").textContent=s[5];$("yy-dist").textContent=s[4];
+    renderLevels(s[3]);
   }
-  function timers(on){ if(on){ schedT=setInterval(schedule,60); uiT=setInterval(tick,100); }
-    else { clearInterval(schedT); clearInterval(uiT); schedT=uiT=null; } }
-  function btns(){ $("yy-start").disabled=playing; $("yy-pause").disabled=!playing;
-    $("yy-start").innerHTML=started&&!playing?"▶ متابعة":"▶ ابدأ"; }
+  function loop(){ update(); raf=requestAnimationFrame(loop); }
+  function startLoop(){ if(!raf)raf=requestAnimationFrame(loop); }
+  function stopLoop(){ if(raf){cancelAnimationFrame(raf);raf=0;} }
 
-  function start(){ if(playing)return; if(!ensure())return;
-    if(!started){ started=true; evIdx=0; var lead=3.4; t0=actx.currentTime+lead;
-      beep(t0-3,700,0.15); beep(t0-2,700,0.15); beep(t0-1,700,0.15); beep(t0,1200,0.28,"triangle"); }
-    playing=true; if(actx.state==="suspended")actx.resume(); timers(true); btns();
+  function renderLevels(curL){ var host=$("yy-levels");
+    if(host.getAttribute("data-built")!=="1"){ host.innerHTML="";
+      LV.forEach(function(L){var d=document.createElement("div");d.setAttribute("data-lv",L[0]);
+        d.innerHTML='<span>مستوى '+L[0]+' · '+fmtSpeed(L[2])+' km/h</span><span>حتى '+L[5]+' م</span>';
+        host.appendChild(d);}); host.setAttribute("data-built","1"); }
+    Array.prototype.forEach.call(host.children,function(c){c.classList.toggle("cur",+c.getAttribute("data-lv")===curL);});
   }
-  function pause(){ if(!playing)return; playing=false; if(actx)actx.suspend(); timers(false); btns(); }
-  function reset(){ playing=false; started=false; evIdx=0; timers(false);
-    if(actx){try{actx.close();}catch(e){} actx=null; master=null;}
-    $("yy-phase").style.background="var(--ink-3)"; $("yy-plab").textContent="جاهز";
-    $("yy-pbig").textContent="اضغط ابدأ"; $("yy-pnx").textContent="ارفع صوت الجوال إلى أقصاه وضعه جانب الملعب";
-    $("yy-pfill").style.width="0%"; $("yy-level").textContent="—"; $("yy-speed").textContent="—";
-    $("yy-shut").textContent="0"; $("yy-dist").textContent="0"; renderLevels(-1); btns();
-  }
-  function finish(){ playing=false; timers(false); if(actx)beep(actx.currentTime+0.05,500,0.5);
-    $("yy-phase").style.background="var(--test)"; $("yy-plab").textContent="انتهى البروتوكول";
-    $("yy-pbig").textContent="أحسنت"; $("yy-pnx").textContent="أكملت كل المستويات"; $("yy-pfill").style.width="100%"; btns(); }
+  function btns(){ var playing=audio&&!audio.paused;
+    $("yy-start").disabled=!!playing; $("yy-pause").disabled=!playing;
+    $("yy-start").innerHTML=(audio&&audio.currentTime>0&&!playing)?"▶ متابعة":"▶ ابدأ"; }
+  function ended(){ $("yy-phase").style.background="var(--test)";$("yy-plab").textContent="انتهى التسجيل";
+    $("yy-pbig").textContent="أحسنت";$("yy-pnx").textContent="سجّل مسافتك الأخيرة";$("yy-pfill").style.width="100%";btns(); }
 
-  function open(){ var o=$("yoyo-overlay"); o.hidden=false; renderLevels(-1); btns(); }
+  function start(){ var a=ensureAudio(); a.play().catch(function(){$("yy-pnx").textContent="اضغط ابدأ مجددًا للسماح بتشغيل الصوت";}); }
+  function pause(){ if(audio)audio.pause(); stopLoop(); }
+  function reset(){ if(audio){audio.pause();audio.currentTime=0;} stopLoop(); update(); btns(); }
+  function skipIntro(){ var a=ensureAudio(); try{a.currentTime=Math.max(0,(TL.ts||0)-2);}catch(e){} a.play().catch(function(){}); }
+
+  function open(){ $("yoyo-overlay").hidden=false; ensureAudio(); renderLevels(-1); update(); btns(); }
   function close(){ pause(); $("yoyo-overlay").hidden=true; }
   window.__openYoyo=open;
 
@@ -1298,17 +1267,15 @@
   $("yy-start").addEventListener("click",start);
   $("yy-pause").addEventListener("click",pause);
   $("yy-reset").addEventListener("click",reset);
-  $("yy-test").addEventListener("click",function(){ if(ensure())beep(actx.currentTime+0.02,1000,0.15); });
-  $("yy-vol").addEventListener("input",function(){ vol=(+this.value)/100; if(master)master.gain.value=vol; });
+  $("yy-test").addEventListener("click",skipIntro);
+  $("yy-vol").addEventListener("input",function(){ if(audio)audio.volume=(+this.value)/100; });
   $("yoyo-overlay").addEventListener("click",function(e){ if(e.target===this)close(); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!$("yoyo-overlay").hidden)close(); });
 })();
 </script>
 <script>
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  window.addEventListener("load", function(){
-    navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);});
-  });
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);}); });
 }
 </script>
 </body>
