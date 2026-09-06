@@ -157,6 +157,11 @@
   .ph-recovery{background:var(--z3-soft);color:var(--z3)}
   .ph-taper{background:var(--test-soft);color:var(--test)}
   .wk.done-all::after{content:"✓";position:absolute;top:8px;left:10px;color:var(--accent);font-weight:700;font-size:13px}
+  .wk .badge{position:absolute;top:-9px;inset-inline-end:10px;font-size:10.5px;font-weight:800;
+    padding:3px 9px;border-radius:999px;background:var(--accent);color:#fff;letter-spacing:.2px;
+    box-shadow:var(--shadow);white-space:nowrap;line-height:1.4}
+  .wk .badge.next{background:var(--surface);color:var(--accent-ink);border:1px solid var(--accent);box-shadow:none}
+  .wk.upcoming{border-color:var(--accent)}
 
   .week-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
   .week-meta .tag{font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:7px}
@@ -705,13 +710,30 @@
   var ZONE_SOFT={z1:"--z1-soft",z2:"--z2-soft",z3:"--z3-soft",z4:"--z4-soft",z5:"--z5-soft",test:"--test-soft"};
 
   /* ---------- State ---------- */
-  var state={age:20,rhr:48,max:null,week:1,done:{},testDate:DEFAULT_DATE};
+  var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true};
   try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&typeof s==="object"){
     if(s.age)state.age=+s.age; if(s.rhr)state.rhr=+s.rhr; if(s.max)state.max=+s.max;
     if(s.week)state.week=+s.week; if(s.done)state.done=s.done;
+    if(s.weekAuto===false)state.weekAuto=false;
     if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;}}}catch(e){}
 
   function testDate(){var d=new Date(state.testDate+"T00:00:00");return isNaN(d)?new Date(DEFAULT_DATE+"T00:00:00"):d;}
+  /* حساب الأسبوع الحالي بناءً على تاريخ الاختبار: يوم الاختبار في الأسبوع 8،
+     كل 7 أيام سابقة تعود لأسبوع أقدم. قبل بدء البرنامج نرجع phase="before"،
+     وبعد يوم الاختبار phase="after". */
+  function programWeekInfo(){
+    var now=new Date();now.setHours(0,0,0,0);
+    var end=testDate();end.setHours(0,0,0,0);
+    var daysToTest=Math.floor((end-now)/86400000);
+    if(daysToTest<0)return {phase:"after",current:8,next:null};
+    var weeksFromEnd=Math.floor(daysToTest/7);
+    var wk=8-weeksFromEnd;
+    if(wk<1)return {phase:"before",current:null,next:1,daysToStart:(1-wk)*7-Math.max(0,6-(daysToTest%7))};
+    return {phase:"in",current:wk,next:wk<8?wk+1:null};
+  }
+  /* الأسبوع التلقائي يتبع تاريخ الاختبار؛ يُلغى فقط لو ضغط المستخدم على أسبوع محدد. */
+  function autoWeek(){var p=programWeekInfo();return p.current||p.next||1;}
+  if(state.week==null||state.weekAuto)state.week=autoWeek();
   function fmtDate(iso){try{return new Intl.DateTimeFormat("ar-u-ca-gregory",{day:"numeric",month:"long",year:"numeric"}).format(new Date(iso+"T00:00:00"));}catch(e){return iso;}}
   function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
 
@@ -939,16 +961,23 @@
   /* ---------- Render: week rail ---------- */
   function renderRail(){
     var rail=document.getElementById("rail");rail.innerHTML="";
+    var info=programWeekInfo();
     WEEKS.forEach(function(wk){
       var ws=weekWorkouts(wk);
       var doneN=ws.filter(function(w){return state.done[w.id];}).length;
-      var b=el("button","wk ph-"+wk.key+(doneN===ws.length&&ws.length?" done-all":""));
+      var cls="wk ph-"+wk.key+(doneN===ws.length&&ws.length?" done-all":"");
+      if(wk.n===info.next&&info.phase==="before")cls+=" upcoming";
+      var b=el("button",cls);
       b.setAttribute("role","tab");
       b.setAttribute("aria-selected",wk.n===state.week?"true":"false");
-      b.innerHTML='<div class="wn">أسبوع '+wk.n+'</div>'+
+      var badge="";
+      if(wk.n===info.current&&info.phase==="in")badge='<span class="badge" title="جدولك هذا الأسبوع">هذا الأسبوع</span>';
+      else if(wk.n===info.next)badge='<span class="badge next" title="الأسبوع القادم من البرنامج">الأسبوع الجاي</span>';
+      b.innerHTML=badge+
+        '<div class="wn">أسبوع '+wk.n+'</div>'+
         '<span class="wp ph-'+wk.key+'">'+wk.phase+'</span>'+
         '<div class="wc">'+doneN+'/'+ws.length+' تمرين</div>';
-      b.addEventListener("click",function(){state.week=wk.n;save();renderRail();renderWeek();
+      b.addEventListener("click",function(){state.week=wk.n;state.weekAuto=false;save();renderRail();renderWeek();
         document.getElementById("weekMeta").scrollIntoView({behavior:"smooth",block:"start"});});
       rail.appendChild(b);
     });
@@ -963,6 +992,14 @@
     var mins=Math.round(secs/60);
     var vol=el("span","vol","≈ "+mins+" دقيقة جري مجدولة"+(wk.days.some(function(d){return (d.workouts||[]).some(function(w){return w.zone==="test";});})?" + اختبار (زمن مفتوح)":""));
     meta.appendChild(tag);meta.appendChild(vol);
+    if(!state.weekAuto){
+      var back=el("button","tag","↺ اتبع التاريخ");
+      back.type="button";back.style.cursor="pointer";back.style.border="1px dashed var(--line-2)";
+      back.style.background="transparent";back.style.color="var(--ink-2)";
+      back.title="ارجع للأسبوع الذي يحدّده تاريخ الاختبار تلقائيًا";
+      back.addEventListener("click",function(){state.weekAuto=true;state.week=autoWeek();save();renderRail();renderWeek();});
+      meta.appendChild(back);
+    }
     meta.appendChild(el("p","desc",wk.desc));
 
     var grid=document.getElementById("grid");grid.innerHTML="";
@@ -1171,7 +1208,9 @@
   });
   ["in-age","in-rhr","in-max"].forEach(function(id){document.getElementById(id).addEventListener("input",onInput);});
   document.getElementById("in-date").addEventListener("change",function(){
-    var v=this.value;if(v&&/^\d{4}-\d{2}-\d{2}$/.test(v)){state.testDate=v;save();renderCountdown();renderWeek();}
+    var v=this.value;if(v&&/^\d{4}-\d{2}-\d{2}$/.test(v)){state.testDate=v;
+      if(state.weekAuto)state.week=autoWeek();
+      save();renderCountdown();renderRail();renderWeek();}
   });
   document.getElementById("pg-reset").addEventListener("click",function(){
     if(window.confirm("تصفير كل علامات الإنجاز؟")){state.done={};save();renderRail();renderWeek();renderProgress();}
