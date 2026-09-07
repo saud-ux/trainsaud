@@ -1,5 +1,5 @@
 /* Service worker — offline app shell + cached fonts + range-aware audio */
-const CACHE = "yoyo-ir1-v3";
+const CACHE = "yoyo-ir1-v4";
 const AUDIO = "./audio/yoyo.mp3";
 const SHELL = [
   "./",
@@ -101,6 +101,25 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  /* مستند HTML: الشبكة أولًا. التخزين أولًا هنا كان يعني أن أي نشر جديد
+     لا يصل المستخدم أبدًا ما لم يتغيّر ملف sw.js نفسه — والموقع كله ملف واحد. */
+  const isDoc = req.mode === "navigate" ||
+                (req.headers.get("accept") || "").includes("text/html");
+  if (isDoc) {
+    e.respondWith(
+      fetch(req)
+        .then((r) => {
+          if (r && r.status === 200 && r.type === "basic") {
+            const cp = r.clone();
+            caches.open(CACHE).then((c) => c.put(req, cp)).catch(() => {});
+          }
+          return r;
+        })
+        .catch(() => caches.match(req).then((hit) => hit || caches.match("./index.html")))
+    );
+    return;
+  }
+
   // بقيّة الطلبات من نفس المصدر: من التخزين أولًا، ثم الشبكة، ثم هيكل التطبيق.
   e.respondWith(
     caches.match(req).then((hit) =>
@@ -117,8 +136,9 @@ self.addEventListener("fetch", (e) => {
   );
 });
 
-/* الصفحة تسأل: هل الصوت مخزَّن؟ */
 self.addEventListener("message", (e) => {
+  if (e.data && e.data.type === "skip-waiting") { self.skipWaiting(); return; }
+  /* الصفحة تسأل: هل الصوت مخزَّن؟ */
   if (!e.data || e.data.type !== "audio-status") return;
   e.waitUntil(
     caches.open(CACHE)

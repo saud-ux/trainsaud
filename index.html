@@ -163,6 +163,14 @@
   .wk .badge.next{background:var(--surface);color:var(--accent-ink);border:1px solid var(--accent);box-shadow:none}
   .wk.upcoming{border-color:var(--accent)}
 
+  .yy-wake{font-size:12px;color:var(--accent-ink);background:var(--accent-soft);
+    border-radius:8px;padding:7px 11px;margin-top:10px;line-height:1.5}
+
+  /* ===== Update toast ===== */
+  .sw-toast{position:fixed;inset-inline-start:16px;bottom:16px;z-index:60;display:flex;align-items:center;
+    gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--accent);border-radius:12px;
+    padding:12px 16px;box-shadow:0 8px 28px rgba(0,0,0,.18);font-size:13px;max-width:min(92vw,420px)}
+
   /* ===== Offline audio bar ===== */
   .offline-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;
     background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
@@ -482,7 +490,7 @@
 
       <div class="datebar">
         <span class="lbl"><span class="ic">📅</span> موعد الاختبار</span>
-        <input id="in-date" type="date" min="2026-01-01" max="2028-12-31">
+        <input id="in-date" type="date">
         <span class="dnote">غيّره إن تأجّل الاختبار — يتحدّث العدّاد ويوم الاختبار تلقائيًا. يُحفظ على جهازك.</span>
       </div>
 
@@ -565,6 +573,7 @@
           <button class="pill" id="db-ics" type="button">📅 صدّر التقويم</button>
           <input id="db-file" type="file" accept="application/json,.json" hidden>
         </div>
+        <div class="db-msg err" id="saveWarn" hidden></div>
         <div class="db-msg" id="db-msg" hidden></div>
       </div>
     </section>
@@ -757,6 +766,7 @@
           <button class="pbtn" id="yy-pause" type="button" disabled>⏸ إيقاف</button>
           <button class="pbtn warn2" id="yy-reset" type="button">↺ تصفير</button>
         </div>
+        <div class="yy-wake" id="yy-wake" hidden></div>
         <div class="prow" id="yy-saverow" hidden style="justify-content:space-between">
           <span id="yy-savelab" style="font-size:12.5px;color:var(--ink-2)">توقّفت هنا؟ احفظ المسافة كنتيجتك.</span>
           <button class="pbtn primary" id="yy-save" type="button" style="flex:0 0 auto;min-width:0;padding:9px 14px;font-size:13px">💾 احفظ <span id="yy-savedist">0</span> م</button>
@@ -896,7 +906,7 @@
   /* shift = عدد أيام تأجيل بداية البرنامج عن بدايته التلقائية (سالب = تقديم).
      postponed = التمارين المؤجّلة {id:1} — دَيْن تحمله معك حتى تؤدّيه أو تسقطه. */
   var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true,
-             shift:0,postponed:{},moved:{},results:{},rpe:{}};
+             shift:0,postponed:{},moved:{},results:{},rpe:{},extra:[]};
   function applyState(s){
     if(!s||typeof s!=="object")return false;
     if(s.age)state.age=+s.age; if(s.rhr)state.rhr=+s.rhr; if(s.max)state.max=+s.max;
@@ -907,6 +917,7 @@
     if(s.moved)state.moved=s.moved;
     if(s.results)state.results=s.results;
     if(s.rpe)state.rpe=s.rpe;
+    if(Array.isArray(s.extra))state.extra=s.extra;
     if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;
     return true;
   }
@@ -961,7 +972,30 @@
     if(n>=3&&n<=10)return n+" أيام";
     return n+" يومًا";
   }
-  function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
+  /* الحفظ الصامت كان يعني فقدان التقدّم دون أي إشعار (وضع خاص، مساحة ممتلئة،
+     أو منع تخزين المواقع). نُظهر تحذيرًا مرّة واحدة ونقترح النسخة الاحتياطية. */
+  var saveBroken=false;
+  function save(){
+    try{
+      localStorage.setItem(LS_KEY,JSON.stringify(state));
+      if(saveBroken){saveBroken=false;saveWarn(null);}
+      return true;
+    }catch(e){
+      if(!saveBroken){saveBroken=true;saveWarn(e);}
+      return false;
+    }
+  }
+  function saveWarn(e){
+    var box=document.getElementById("saveWarn");
+    if(!box)return;
+    if(!e){box.hidden=true;box.textContent="";return;}
+    var quota=/quota|exceed/i.test(e&&(e.name+" "+e.message)||"");
+    box.hidden=false;
+    box.innerHTML="⚠ <b>تقدّمك لا يُحفظ على هذا الجهاز.</b> "+
+      (quota?"مساحة التخزين ممتلئة — احذف الصوت المخزَّن أو بيانات مواقع أخرى."
+            :"قد يكون المتصفّح في وضع خاص أو يمنع تخزين المواقع.")+
+      " صدّر نسخة احتياطية الآن حتى لا تفقد ما سجّلته.";
+  }
 
   /* ---------- Zones ---------- */
   function hrmax(){return state.max||Math.round(208-0.7*state.age);}
@@ -1208,9 +1242,15 @@
     for(var i=0;i<LV.length;i++){if(dist>LV[i][4])best=LV[i];}
     return best; /* [مستوى, وقت, سرعة, _, من, إلى] */
   }
-  /* النتائج المسجّلة بترتيب البرنامج. */
+  /* النتائج المسجّلة: الثلاثة المجدولة، يليها ما سجّلته خارج الجدول مرتّبًا بالتاريخ. */
+  function extraRows(){
+    return (state.extra||[]).slice()
+      .sort(function(a,b){return (a.date||"").localeCompare(b.date||"");})
+      .map(function(x){return {t:{id:x.id,label:x.label||"اختبار إضافي",wk:null,extra:true},
+                                r:{dist:x.dist,hr:x.hr||null,date:x.date}};});
+  }
   function resultRows(){
-    return TESTS.map(function(t){return {t:t,r:state.results[t.id]||null};});
+    return TESTS.map(function(t){return {t:t,r:state.results[t.id]||null};}).concat(extraRows());
   }
   function prevResult(id){
     var idx=TESTS.findIndex(function(t){return t.id===id;}),p=null;
@@ -1226,10 +1266,12 @@
     var row=el("div","rf-row");
     var dl=el("label",null,"المسافة التي وصلتها (م)");
     var di=el("input");di.type="number";di.min="0";di.max="4480";di.step="20";di.inputMode="numeric";
-    di.value=(r.dist!=null?r.dist:"");di.placeholder="مثال: 1240";dl.appendChild(di);
+    di.value=(r.dist!=null?r.dist:"");di.placeholder="مثال: 1240";
+    di.setAttribute("data-fk","rdist:"+w.id);dl.appendChild(di);
     var hl=el("label",null,"أعلى نبض سجّلته الساعة");
     var hi=el("input");hi.type="number";hi.min="120";hi.max="230";hi.inputMode="numeric";
-    hi.value=(r.hr!=null?r.hr:"");hi.placeholder="اختياري";hl.appendChild(hi);
+    hi.value=(r.hr!=null?r.hr:"");hi.placeholder="اختياري";
+    hi.setAttribute("data-fk","rhr:"+w.id);hl.appendChild(hi);
     row.appendChild(dl);row.appendChild(hl);box.appendChild(row);
     var out=el("div","rf-out");box.appendChild(out);
     var acts=el("div","rf-acts");box.appendChild(acts);
@@ -1282,15 +1324,53 @@
     return box;
   }
 
+  /* اختبار خارج الجدول — تجريه في أي وقت وتريد أن يدخل مقارنة التقدّم. */
+  function buildExtraForm(){
+    var box=el("div","resform");box.style.marginTop="18px";
+    box.appendChild(el("div","rf-h","➕ سجّل اختبارًا خارج الجدول"));
+    var row=el("div","rf-row");
+    var dl=el("label",null,"التاريخ");
+    var dd=el("input");dd.type="date";dd.value=toISO(todayD());
+    dd.setAttribute("data-fk","xdate");dl.appendChild(dd);
+    var ml=el("label",null,"المسافة (م)");
+    var mi=el("input");mi.type="number";mi.min="0";mi.max="4480";mi.step="20";mi.inputMode="numeric";
+    mi.placeholder="مثال: 1400";mi.setAttribute("data-fk","xdist");ml.appendChild(mi);
+    var hl=el("label",null,"أعلى نبض (اختياري)");
+    var hi=el("input");hi.type="number";hi.min="120";hi.max="230";hi.inputMode="numeric";
+    hi.placeholder="اختياري";hi.setAttribute("data-fk","xhr");hl.appendChild(hi);
+    row.appendChild(dl);row.appendChild(ml);row.appendChild(hl);box.appendChild(row);
+    var out=el("div","rf-out");box.appendChild(out);
+    var acts=el("div","rf-acts");box.appendChild(acts);
+    var add=el("button","pill solid","أضِف النتيجة");add.type="button";
+    add.addEventListener("click",function(){
+      var dist=+mi.value;
+      if(!(dist>0)){out.textContent="أدخل مسافة أكبر من صفر.";return;}
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(dd.value)){out.textContent="أدخل تاريخًا صالحًا.";return;}
+      state.extra=state.extra||[];
+      state.extra.push({id:"X"+Date.now(),label:"اختبار "+fmtDate(dd.value),
+                        date:dd.value,dist:dist,hr:(+hi.value>0?+hi.value:null)});
+      rerender();
+    });
+    acts.appendChild(add);
+    return box;
+  }
+
   /* ---------- Render: results panel ---------- */
   function renderResults(){
     var host=document.getElementById("resultsPanel");if(!host)return;
     host.innerHTML="";
-    var grid=el("div","res-grid"),rows=resultRows(),lastSeen=null;
+    var grid=el("div","res-grid"),rows=resultRows();
+    /* العرض بترتيب البرنامج، لكن المقارنات تتبع التاريخ الفعلي — اختبار خارج
+       الجدول قد يقع بين اثنين مجدولين. */
+    var chain=rows.filter(function(x){return x.r&&x.r.date;})
+                  .slice().sort(function(a,b){return a.r.date.localeCompare(b.r.date);});
+    function prevInChain(x){
+      var i=chain.indexOf(x);return i>0?chain[i-1]:null;
+    }
     rows.forEach(function(x){
       var c=el("div","res-card"+(x.r?" has":""));
       c.appendChild(el("div","rc-lab",x.t.label));
-      c.appendChild(el("div","rc-wk","أسبوع "+x.t.wk+" · "+x.t.id));
+      c.appendChild(el("div","rc-wk",x.t.extra?"خارج الجدول":"أسبوع "+x.t.wk+" · "+x.t.id));
       if(!x.r){
         c.appendChild(el("div","rc-empty","لم يُسجَّل بعد — سجّله من بطاقة الاختبار في الأسبوع "+x.t.wk+"."));
       }else{
@@ -1303,25 +1383,36 @@
         if(x.r.hr)meta.appendChild(el("div",null,"أعلى نبض: <b>"+x.r.hr+"</b> ن/د"));
         meta.appendChild(el("div",null,"التاريخ: "+fmtDate(x.r.date)));
         c.appendChild(meta);
-        if(lastSeen){
-          var diff=x.r.dist-lastSeen.r.dist,pct=Math.round(diff/lastSeen.r.dist*100);
+        var pv=prevInChain(x);
+        if(pv){
+          var diff=x.r.dist-pv.r.dist,pct=Math.round(diff/pv.r.dist*100);
           c.appendChild(el("div","rc-delta "+(diff>=0?"up":"down"),
-            (diff>=0?"▲ +":"▼ −")+Math.abs(diff)+" م ("+(diff>=0?"+":"−")+Math.abs(pct)+"٪) عن "+lastSeen.t.label));
+            (diff>=0?"▲ +":"▼ −")+Math.abs(diff)+" م ("+(diff>=0?"+":"−")+Math.abs(pct)+"٪) عن "+pv.t.label));
         }
-        lastSeen=x;
+        if(x.t.extra){
+          var rm=el("button","pill ghost","احذفه");rm.type="button";
+          rm.style.marginTop="10px";rm.style.fontSize="11.5px";rm.style.padding="4px 10px";
+          rm.addEventListener("click",function(){
+            state.extra=(state.extra||[]).filter(function(y){return y.id!==x.t.id;});rerender();});
+          c.appendChild(rm);
+        }
       }
       grid.appendChild(c);
     });
     host.appendChild(grid);
+    host.appendChild(buildExtraForm());
 
-    var have=rows.filter(function(x){return x.r;});
+    var have=chain;                    /* مرتّبة بالتاريخ */
+    var nSched=rows.filter(function(x){return !x.t.extra&&x.r;}).length;
+    var nExtra=rows.filter(function(x){return x.t.extra;}).length;
     var sum=el("div","res-sum");
     if(!have.length){
       sum.innerHTML="لا نتائج بعد. بعد كل اختبار افتح بطاقته في الأسبوع المقابل وأدخل المسافة — سيظهر تقدّمك هنا بالأرقام.";
     }else{
       var f=have[0],l=have[have.length-1];
       var bits=[];
-      bits.push("سجّلت <b>"+have.length+"</b> من <b>3</b> اختبارات.");
+      bits.push("سجّلت <b>"+nSched+"</b> من <b>3</b> اختبارات مجدولة"+
+        (nExtra?"، و<b>"+nExtra+"</b> خارج الجدول":"")+".");
       if(have.length>1){
         var d=l.r.dist-f.r.dist,p=Math.round(d/f.r.dist*100);
         var dv=vo2max(l.r.dist)-vo2max(f.r.dist);
@@ -1389,7 +1480,25 @@
       if(state.postponed[w.id]&&!state.done[w.id])out.push({wk:wk.n,w:w});});});
     return out;
   }
-  function rerender(){save();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();renderResults();}
+  /* إعادة الرسم تستبدل الشبكة كاملة، فيضيع التركيز وموضع المؤشّر داخل الحقول.
+     نحفظ مفتاح العنصر المركَّز (data-fk) ونعيده بعد البناء. */
+  function withFocus(fn){
+    var a=document.activeElement;
+    var key=(a&&a.getAttribute)?a.getAttribute("data-fk"):null;
+    var ss=null,se=null;
+    try{if(a&&a.selectionStart!=null){ss=a.selectionStart;se=a.selectionEnd;}}catch(e){}
+    fn();
+    if(!key)return;
+    var n=document.querySelector('[data-fk="'+key+'"]');
+    if(!n)return;
+    try{n.focus({preventScroll:true});}catch(e){n.focus();}
+    try{if(ss!=null&&n.setSelectionRange)n.setSelectionRange(ss,se);}catch(e){}
+  }
+  function rerender(){
+    withFocus(function(){
+      save();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();renderResults();
+    });
+  }
   function shiftBy(n){
     state.shift=Math.max(-56,Math.min(120,(state.shift||0)+n));
     if(state.weekAuto)state.week=autoWeek();
@@ -1468,6 +1577,7 @@
       /* انقله إلى تاريخ محدّد بدل إرجاعه لموضعه الأصلي فقط. */
       var dt=el("input");dt.type="date";dt.className="ti-date";
       dt.value=state.moved[x.w.id]||toISO(todayD());
+      dt.setAttribute("data-fk","mv:"+x.w.id);
       dt.title="انقل "+x.w.id+" إلى هذا التاريخ";
       dt.setAttribute("aria-label","انقل "+x.w.id+" إلى تاريخ");
       dt.addEventListener("change",function(){
@@ -1517,6 +1627,7 @@
     box.appendChild(el("span",null,"الجهد:"));
     var sel=document.createElement("select");
     sel.setAttribute("aria-label","تقييم الجهد المبذول في "+w.id);
+    sel.setAttribute("data-fk","rpe:"+w.id);
     var o0=document.createElement("option");o0.value="";o0.textContent="— قيّمه";sel.appendChild(o0);
     for(var i=1;i<=10;i++){
       var o=document.createElement("option");o.value=i;o.textContent=i+" · "+RPE_LABEL[i];sel.appendChild(o);
@@ -1591,8 +1702,13 @@
       var cls="wk ph-"+wk.key+(doneN===ws.length&&ws.length?" done-all":"");
       if(wk.n===info.next&&info.phase==="before")cls+=" upcoming";
       var b=el("button",cls);
+      var sel=wk.n===state.week;
       b.setAttribute("role","tab");
-      b.setAttribute("aria-selected",wk.n===state.week?"true":"false");
+      b.setAttribute("aria-selected",sel?"true":"false");
+      b.setAttribute("aria-controls","grid");
+      b.id="wk-tab-"+wk.n;
+      b.tabIndex=sel?0:-1;              /* tabindex متنقّل: تبويب واحد في مسار Tab */
+      b.setAttribute("data-fk","wk:"+wk.n);
       var badge="";
       if(wk.n===info.current&&info.phase==="in")badge='<span class="badge" title="جدولك هذا الأسبوع">هذا الأسبوع</span>';
       else if(wk.n===info.next)badge='<span class="badge next" title="الأسبوع القادم من البرنامج">الأسبوع الجاي</span>';
@@ -1600,11 +1716,34 @@
         '<div class="wn">أسبوع '+wk.n+'</div>'+
         '<span class="wp ph-'+wk.key+'">'+wk.phase+'</span>'+
         '<div class="wc">'+doneN+'/'+ws.length+' تمرين</div>';
-      b.addEventListener("click",function(){state.week=wk.n;state.weekAuto=false;save();renderRail();renderWeek();
-        document.getElementById("weekMeta").scrollIntoView({behavior:"smooth",block:"start"});});
+      b.addEventListener("click",function(){pickWeek(wk.n,true);});
       rail.appendChild(b);
     });
+    var grid=document.getElementById("grid");
+    grid.setAttribute("role","tabpanel");
+    grid.setAttribute("aria-labelledby","wk-tab-"+state.week);
   }
+  function pickWeek(n,scroll){
+    if(n<1||n>WEEKS.length)return;
+    state.week=n;state.weekAuto=false;save();renderRail();renderWeek();
+    if(scroll)document.getElementById("weekMeta").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  /* تنقّل التبويبات بلوحة المفاتيح. الصفحة يمين‑لليسار: السهم الأيسر يتقدّم. */
+  (function(){
+    var rail=document.getElementById("rail");
+    rail.addEventListener("keydown",function(e){
+      var n=state.week,last=WEEKS.length,to=null;
+      if(e.key==="ArrowLeft"||e.key==="ArrowDown")to=n<last?n+1:1;
+      else if(e.key==="ArrowRight"||e.key==="ArrowUp")to=n>1?n-1:last;
+      else if(e.key==="Home")to=1;
+      else if(e.key==="End")to=last;
+      else return;
+      e.preventDefault();
+      pickWeek(to,false);
+      var t=document.getElementById("wk-tab-"+to);
+      if(t){t.focus();t.scrollIntoView({block:"nearest",inline:"nearest"});}
+    });
+  })();
 
   /* ---------- Render: selected week ---------- */
   function renderWeek(){
@@ -1703,6 +1842,8 @@
         var cf=el("div","cf");
         var lab=el("label","donebox");
         var cb=el("input");cb.type="checkbox";cb.checked=!!state.done[w.id];
+        cb.setAttribute("data-fk","done:"+w.id);
+        cb.setAttribute("aria-label","علِّم "+w.id+" كمُنجَز");
         cb.addEventListener("change",function(){
           if(cb.checked){state.done[w.id]=1;delete state.postponed[w.id];}else{delete state.done[w.id];}
           rerender();});
@@ -1710,6 +1851,7 @@
         cf.appendChild(lab);
         var pp=el("button","pill ghost",isPost?"↩ أرجِعه":"أجّله");
         pp.type="button";pp.style.padding="5px 10px";pp.style.fontSize="12px";
+        pp.setAttribute("data-fk","pp:"+w.id);
         pp.title=isPost?"أرجِع هذا التمرين للجدول":"ما راح أتمرّن هذا اليوم — انقله لقائمة المؤجّل";
         pp.addEventListener("click",function(){
           if(isPost)delete state.postponed[w.id];else state.postponed[w.id]=1;
@@ -1749,7 +1891,7 @@
     var payload={app:"yoyo-ir1",v:1,exported:new Date().toISOString(),state:{
       age:state.age,rhr:state.rhr,max:state.max,week:state.week,weekAuto:state.weekAuto,
       testDate:state.testDate,shift:state.shift,done:state.done,postponed:state.postponed,
-      moved:state.moved,results:state.results,rpe:state.rpe}};
+      moved:state.moved,results:state.results,rpe:state.rpe,extra:state.extra}};
     var name="yoyo-backup-"+toISO(todayD())+".json";
     if(saveFile(name,JSON.stringify(payload,null,2),"application/json"))
       dbMsg("✓ نُزّلت النسخة الاحتياطية: "+name,"ok");
@@ -1765,7 +1907,7 @@
       if(!s||typeof s!=="object"){dbMsg("لم أجد بيانات صالحة في الملف.","err");return;}
       if(data&&data.app&&data.app!=="yoyo-ir1"){dbMsg("هذا الملف ليس نسخة احتياطية لهذا البرنامج.","err");return;}
       if(!window.confirm("استيراد هذه النسخة سيستبدل تقدّمك الحالي على هذا الجهاز. متابعة؟"))return;
-      state.done={};state.postponed={};state.moved={};state.results={};state.rpe={};
+      state.done={};state.postponed={};state.moved={};state.results={};state.rpe={};state.extra=[];
       applyState(s);
       if(state.weekAuto)state.week=autoWeek();
       syncInputs();renderMeter();rerender();
@@ -1818,6 +1960,14 @@
       L.push(icsFold("DESCRIPTION:"+icsEsc(desc)));
       if(state.done[x.w.id])L.push("STATUS:CONFIRMED");
       L.push("TRANSP:TRANSPARENT");
+      /* تنبيه صباح يوم التمرين (الحدث ليوم كامل يبدأ منتصف الليل ⇒ +8 ساعات). */
+      if(!state.done[x.w.id]){
+        L.push("BEGIN:VALARM");
+        L.push("ACTION:DISPLAY");
+        L.push("TRIGGER;RELATED=START:PT8H");
+        L.push(icsFold("DESCRIPTION:"+icsEsc(title)));
+        L.push("END:VALARM");
+      }
       L.push("END:VEVENT");
     });
     L.push("END:VCALENDAR");
@@ -1861,7 +2011,11 @@
     document.getElementById("in-age").value=state.age;
     document.getElementById("in-rhr").value=state.rhr;
     document.getElementById("in-max").value=state.max||"";
-    document.getElementById("in-date").value=state.testDate;
+    var d=document.getElementById("in-date");
+    /* الحدود محسوبة من اليوم لا مكتوبة بالسنوات — لا تنتهي صلاحية البرنامج. */
+    d.min=toISO(addDays(todayD(),-365));
+    d.max=toISO(addDays(todayD(),365*5));
+    d.value=state.testDate;
   }
   function onInput(){
     var a=+document.getElementById("in-age").value;
@@ -2097,12 +2251,67 @@ window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":23,"fb":29.27,"td":4480,"lv":[[1,40.
     $("yy-start").innerHTML=(audio&&audio.currentTime>0&&!playing)?"▶ متابعة":"▶ ابدأ"; }
   function ended(){ $("yy-phase").style.background="var(--test)";$("yy-plab").textContent="انتهى التسجيل";
     $("yy-pbig").textContent="أحسنت";$("yy-pnx").textContent="سجّل مسافتك الأخيرة";$("yy-pfill").style.width="100%";
-    btns(); syncSave(); }
+    btns(); syncSave(); wakeOff(); mediaState("none"); }
 
-  function start(){ var a=ensureAudio(); a.play().catch(function(){$("yy-pnx").textContent="اضغط ابدأ مجددًا للسماح بتشغيل الصوت";}); }
-  function pause(){ if(audio)audio.pause(); stopLoop(); }
-  function reset(){ if(audio){audio.pause();audio.currentTime=0;} stopLoop(); update(); btns(); }
-  function skipIntro(){ var a=ensureAudio(); try{a.currentTime=Math.max(0,(TL.ts||0));}catch(e){} a.play().catch(function(){}); }
+  /* ===== إبقاء الشاشة صاحية أثناء الاختبار =====
+     الاختبار ≈٢٧ دقيقة والجوال جانب الملعب؛ بلا هذا تنطفئ الشاشة خلال دقيقة
+     فتفقد العرض الحيّ للمسافة — وهي نتيجتك. */
+  var wl=null, wlWanted=false;
+  /* نفحص الدالة نفسها لا وجود الخاصية: بعض المتصفّحات تعرّف navigator.wakeLock
+     بقيمة undefined، فـ ("wakeLock" in navigator) تنجح ثم ينهار الاستدعاء. */
+  function wakeSupported(){
+    return !!(navigator.wakeLock&&typeof navigator.wakeLock.request==="function");
+  }
+  function wakeOn(){
+    wlWanted=true;
+    if(!wakeSupported()||wl)return;
+    navigator.wakeLock.request("screen").then(function(s){
+      wl=s;
+      s.addEventListener("release",function(){wl=null;});
+      wakeBadge();
+    }).catch(function(){wakeBadge();});
+  }
+  function wakeOff(){
+    wlWanted=false;
+    if(wl){try{wl.release();}catch(e){} wl=null;}
+    wakeBadge();
+  }
+  function wakeBadge(){
+    var n=$("yy-wake");if(!n)return;
+    if(!wakeSupported()){
+      n.textContent="⚠ متصفّحك لا يدعم إبقاء الشاشة صاحية — ارفع مهلة إطفاء الشاشة يدويًا قبل الاختبار.";
+      n.hidden=false;return;
+    }
+    n.textContent=wl?"🔆 الشاشة ستبقى صاحية طوال التشغيل":"";
+    n.hidden=!wl;
+  }
+  document.addEventListener("visibilitychange",function(){
+    /* قفل الشاشة يُلغي التصريح، فنطلبه مجددًا عند العودة إن كان التشغيل مستمرًّا. */
+    if(document.visibilityState==="visible"&&wlWanted&&audio&&!audio.paused)wakeOn();
+  });
+
+  /* تحكّم من شاشة القفل بدل فتح الصفحة أثناء الاختبار. */
+  function mediaSetup(){
+    if(!("mediaSession" in navigator))return;
+    try{
+      navigator.mediaSession.metadata=new MediaMetadata({
+        title:"صافرات YYIR1", artist:"برنامج اليو‑يو", album:"اختبار Yo-Yo IR1"});
+      navigator.mediaSession.setActionHandler("play",function(){start();});
+      navigator.mediaSession.setActionHandler("pause",function(){pause();});
+      navigator.mediaSession.setActionHandler("stop",function(){reset();});
+    }catch(e){}
+  }
+  function mediaState(s){
+    if("mediaSession" in navigator){try{navigator.mediaSession.playbackState=s;}catch(e){}}
+  }
+
+  function start(){ var a=ensureAudio();
+    a.play().then(function(){wakeOn();mediaSetup();mediaState("playing");})
+     .catch(function(){$("yy-pnx").textContent="اضغط ابدأ مجددًا للسماح بتشغيل الصوت";}); }
+  function pause(){ if(audio)audio.pause(); stopLoop(); wakeOff(); mediaState("paused"); }
+  function reset(){ if(audio){audio.pause();audio.currentTime=0;} stopLoop(); wakeOff(); mediaState("none"); update(); btns(); }
+  function skipIntro(){ var a=ensureAudio(); try{a.currentTime=Math.max(0,(TL.ts||0));}catch(e){}
+    a.play().then(function(){wakeOn();mediaSetup();mediaState("playing");}).catch(function(){}); }
 
   /* ===== حفظ المسافة كنتيجة اختبار ===== */
   var curTest=null;                       /* معرّف الاختبار الذي فُتح المشغّل منه */
@@ -2129,8 +2338,8 @@ window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":23,"fb":29.27,"td":4480,"lv":[[1,40.
   }
 
   function open(testId){ curTest=(typeof testId==="string")?testId:null;
-    $("yoyo-overlay").hidden=false; ensureAudio(); renderLevels(-1); update(); btns(); syncSave(); }
-  function close(){ pause(); $("yoyo-overlay").hidden=true; }
+    $("yoyo-overlay").hidden=false; ensureAudio(); renderLevels(-1); update(); btns(); syncSave(); wakeBadge(); }
+  function close(){ pause(); wakeOff(); $("yoyo-overlay").hidden=true; }
   window.__openYoyo=open;
 
   $("open-player").addEventListener("click",function(){open(null);});
@@ -2208,9 +2417,33 @@ window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":23,"fb":29.27,"td":4480,"lv":[[1,40.
       .then(check).catch(check);
   }
 
+  /* إشعار «نسخة جديدة» — المستند يُجلب من الشبكة أولًا، فالإشعار للأصول لا للصفحة. */
+  function updateToast(reg){
+    if(document.getElementById("sw-toast"))return;
+    var t=document.createElement("div");t.id="sw-toast";t.className="sw-toast";
+    t.innerHTML='<span>تحديث جديد للتطبيق جاهز.</span>';
+    var b=document.createElement("button");b.className="pill solid";b.type="button";b.textContent="حدّث الآن";
+    b.addEventListener("click",function(){
+      if(reg&&reg.waiting)reg.waiting.postMessage({type:"skip-waiting"});
+      location.reload();
+    });
+    t.appendChild(b);
+    var x=document.createElement("button");x.className="pill ghost";x.type="button";x.textContent="لاحقًا";
+    x.addEventListener("click",function(){t.remove();});
+    t.appendChild(x);
+    document.body.appendChild(t);
+  }
+
   if("serviceWorker" in navigator && location.protocol.startsWith("http")){
     window.addEventListener("load",function(){
-      navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);});
+      navigator.serviceWorker.register("sw.js").then(function(reg){
+        reg.addEventListener("updatefound",function(){
+          var nw=reg.installing;if(!nw)return;
+          nw.addEventListener("statechange",function(){
+            if(nw.state==="installed"&&navigator.serviceWorker.controller)updateToast(reg);
+          });
+        });
+      }).catch(function(e){console.warn("SW:",e);});
     });
   }
   check();
