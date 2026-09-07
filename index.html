@@ -163,6 +163,42 @@
   .wk .badge.next{background:var(--surface);color:var(--accent-ink);border:1px solid var(--accent);box-shadow:none}
   .wk.upcoming{border-color:var(--accent)}
 
+  /* ===== Plan control (تأجيل) ===== */
+  .plan-ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);
+    border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+  .plan-ctl .pc-when{font-size:13px;color:var(--ink-2);line-height:1.6}
+  .plan-ctl .pc-when b{color:var(--ink);font-weight:700}
+  .plan-ctl .pc-fit{font-size:12px;margin-top:3px;color:var(--ink-3)}
+  .plan-ctl .pc-fit.warn{color:var(--test);font-weight:600}
+  .plan-ctl .pc-acts{margin-inline-start:auto;display:flex;gap:7px;flex-wrap:wrap}
+  .pill{font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--ink);
+    transition:border-color .15s,background .15s;white-space:nowrap}
+  .pill:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .pill.solid{background:var(--accent);border-color:var(--accent);color:#fff}
+  .pill.solid:hover{filter:brightness(1.08);background:var(--accent)}
+  .pill.ghost{background:transparent;border-style:dashed;color:var(--ink-2)}
+  .pill[disabled]{opacity:.45;cursor:not-allowed}
+  .pill[disabled]:hover{border-color:var(--line);background:var(--surface-2)}
+
+  /* ===== Postponed tray ===== */
+  .tray{border:1px dashed var(--line-2);border-radius:12px;padding:12px 14px;margin:0 0 18px;
+    background:var(--surface-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tray .th{font-size:12.5px;font-weight:700;color:var(--ink-2)}
+  .tray .ti{font-family:var(--f-mono);font-size:11.5px;background:var(--surface);border:1px solid var(--line);
+    border-radius:7px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px}
+  .tray .ti button{background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:13px;line-height:1;padding:0}
+  .tray .ti button:hover{color:var(--accent-ink)}
+  .tray .tclear{margin-inline-start:auto}
+
+  /* ===== Postponed card ===== */
+  .card.postponed{opacity:.62;border-style:dashed}
+  .card.postponed .stripe{filter:grayscale(1)}
+  .card .dstamp{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);margin-top:4px}
+  .card .dstamp.is-today{color:var(--accent-ink);font-weight:700}
+  .flag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;
+    background:var(--line);color:var(--ink-2);margin-inline-start:6px;white-space:nowrap}
+
   .week-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
   .week-meta .tag{font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:7px}
   .week-meta .vol{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
@@ -422,8 +458,10 @@
           <span class="ltr">Taper</span>.
           علّم كل تمرين بعد إتمامه ليُحفظ تقدّمك على هذا الجهاز.</p>
       </div>
+      <div class="plan-ctl" id="planCtl"></div>
       <div class="rail" id="rail" role="tablist" aria-label="الأسابيع"></div>
       <div class="week-meta" id="weekMeta"></div>
+      <div class="tray" id="tray" hidden></div>
       <div class="grid" id="grid"></div>
 
       <div class="progress">
@@ -710,31 +748,58 @@
   var ZONE_SOFT={z1:"--z1-soft",z2:"--z2-soft",z3:"--z3-soft",z4:"--z4-soft",z5:"--z5-soft",test:"--test-soft"};
 
   /* ---------- State ---------- */
-  var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true};
+  /* shift = عدد أيام تأجيل بداية البرنامج عن بدايته التلقائية (سالب = تقديم).
+     postponed = التمارين المؤجّلة {id:1} — دَيْن تحمله معك حتى تؤدّيه أو تسقطه. */
+  var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true,shift:0,postponed:{}};
   try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&typeof s==="object"){
     if(s.age)state.age=+s.age; if(s.rhr)state.rhr=+s.rhr; if(s.max)state.max=+s.max;
     if(s.week)state.week=+s.week; if(s.done)state.done=s.done;
     if(s.weekAuto===false)state.weekAuto=false;
+    if(typeof s.shift==="number"&&isFinite(s.shift))state.shift=Math.max(-56,Math.min(120,Math.round(s.shift)));
+    if(s.postponed)state.postponed=s.postponed;
     if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;}}}catch(e){}
 
+  /* ---------- Dates ---------- */
+  var DAY=86400000;
+  function dOnly(d){var x=new Date(d);x.setHours(0,0,0,0);return x;}
+  function addDays(d,n){var x=dOnly(d);x.setDate(x.getDate()+n);return x;}
+  function todayD(){return dOnly(new Date());}
+  function daysBetween(a,b){return Math.round((dOnly(b)-dOnly(a))/DAY);}
+  function toISO(d){d=dOnly(d);var m=d.getMonth()+1,dd=d.getDate();
+    return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd;}
   function testDate(){var d=new Date(state.testDate+"T00:00:00");return isNaN(d)?new Date(DEFAULT_DATE+"T00:00:00"):d;}
-  /* حساب الأسبوع الحالي بناءً على تاريخ الاختبار: يوم الاختبار في الأسبوع 8،
-     كل 7 أيام سابقة تعود لأسبوع أقدم. قبل بدء البرنامج نرجع phase="before"،
-     وبعد يوم الاختبار phase="after". */
+  /* البداية التلقائية: أحدُ الأسبوع الذي يقع فيه الاختبار، ناقص ٧ أسابيع ⇒ يوم الاختبار داخل الأسبوع الثامن. */
+  function autoStart(){var t=dOnly(testDate());return addDays(t,-t.getDay()-49);}
+  function startDate(){return addDays(autoStart(),state.shift||0);}
+  /* أوفست كل يوم داخل أسبوعه، بالنسبة لأحد ذلك الأسبوع. */
+  var DAY_OFF={"الأحد":0,"الاثنين":1,"الثلاثاء":2,"الأربعاء":3,"الخميس":4,"الجمعة":5,"السبت":6};
+  function dayDate(weekN,day){
+    if(day.realTest)return dOnly(testDate());
+    var off=DAY_OFF[day.name];if(off==null)return null;
+    return addDays(startDate(),(weekN-1)*7+off);
+  }
+  /* في أي أسبوع من البرنامج يقع يوم الاختبار؟ ٨ = مضبوط، أقل = البرنامج لن يكتمل قبله. */
+  function testWeek(){var d=daysBetween(startDate(),testDate());return d<0?0:Math.floor(d/7)+1;}
+
   function programWeekInfo(){
-    var now=new Date();now.setHours(0,0,0,0);
-    var end=testDate();end.setHours(0,0,0,0);
-    var daysToTest=Math.floor((end-now)/86400000);
-    if(daysToTest<0)return {phase:"after",current:8,next:null};
-    var weeksFromEnd=Math.floor(daysToTest/7);
-    var wk=8-weeksFromEnd;
-    if(wk<1)return {phase:"before",current:null,next:1,daysToStart:(1-wk)*7-Math.max(0,6-(daysToTest%7))};
+    var d=daysBetween(startDate(),todayD());
+    if(d<0)return {phase:"before",current:null,next:1,daysToStart:-d};
+    var wk=Math.floor(d/7)+1;
+    if(wk>8)return {phase:"after",current:8,next:null};
     return {phase:"in",current:wk,next:wk<8?wk+1:null};
   }
-  /* الأسبوع التلقائي يتبع تاريخ الاختبار؛ يُلغى فقط لو ضغط المستخدم على أسبوع محدد. */
+  /* الأسبوع التلقائي يتبع التاريخ؛ يُلغى فقط لو ضغط المستخدم على أسبوع محدد. */
   function autoWeek(){var p=programWeekInfo();return p.current||p.next||1;}
   if(state.week==null||state.weekAuto)state.week=autoWeek();
   function fmtDate(iso){try{return new Intl.DateTimeFormat("ar-u-ca-gregory",{day:"numeric",month:"long",year:"numeric"}).format(new Date(iso+"T00:00:00"));}catch(e){return iso;}}
+  function fmtShort(d){try{return new Intl.DateTimeFormat("ar-u-ca-gregory",{weekday:"long",day:"numeric",month:"long"}).format(d);}catch(e){return toISO(d);}}
+  /* صيغة جمع الأيام بالعربي: مفرد/مثنّى/جمع قلّة/تمييز مفرد منصوب. */
+  function plDays(n){
+    if(n===1)return "يوم واحد";
+    if(n===2)return "يومين";
+    if(n>=3&&n<=10)return n+" أيام";
+    return n+" يومًا";
+  }
   function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
 
   /* ---------- Zones ---------- */
@@ -958,6 +1023,113 @@
     return lines.join("\n");
   }
 
+  /* ---------- Postpone helpers ---------- */
+  /* كل تمارين البرنامج المجدولة في تاريخ معيّن (يوم الراحة لا يُعيد شيئًا). */
+  function workoutsOn(date){
+    var out=[];
+    WEEKS.forEach(function(wk){
+      wk.days.forEach(function(day){
+        var dd=dayDate(wk.n,day);
+        if(!dd||daysBetween(dd,date)!==0)return;
+        (day.workouts||[]).forEach(function(w){out.push({wk:wk.n,day:day,w:w});});
+      });
+    });
+    return out;
+  }
+  function postponedList(){
+    var out=[];
+    WEEKS.forEach(function(wk){weekWorkouts(wk).forEach(function(w){
+      if(state.postponed[w.id]&&!state.done[w.id])out.push({wk:wk.n,w:w});});});
+    return out;
+  }
+  function rerender(){save();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();}
+  function shiftBy(n){
+    state.shift=Math.max(-56,Math.min(120,(state.shift||0)+n));
+    if(state.weekAuto)state.week=autoWeek();
+    rerender();
+  }
+
+  /* ---------- Render: plan control ---------- */
+  function renderPlanCtl(){
+    var box=document.getElementById("planCtl");box.innerHTML="";
+    var info=programWeekInfo(),st=startDate(),tw=testWeek();
+
+    var when=el("div","pc-when");
+    var line;
+    if(info.phase==="before"){
+      line="يبدأ البرنامج <b>"+fmtShort(st)+"</b> — بعد "+plDays(info.daysToStart);
+    }else if(info.phase==="after"){
+      line="انتهى جدول البرنامج (بدأ <b>"+fmtShort(st)+"</b>)";
+    }else{
+      line="أنت في <b>الأسبوع "+info.current+"</b> — بدأ البرنامج "+fmtShort(st);
+    }
+    when.innerHTML=line;
+
+    var fit=el("div","pc-fit");
+    if(tw===8){fit.textContent="✓ يوم الاختبار يقع في الأسبوع الثامن — الجدول مضبوط.";}
+    else if(tw<8&&tw>0){fit.className="pc-fit warn";
+      fit.textContent="⚠ يوم الاختبار يقع في الأسبوع "+tw+" — لن تُكمل البرنامج قبله. قدِّم البداية أو أخِّر موعد الاختبار.";}
+    else if(tw===0){fit.className="pc-fit warn";fit.textContent="⚠ موعد الاختبار قبل بداية البرنامج.";}
+    else{fit.textContent="بعد نهاية الأسبوع الثامن يتبقّى "+plDays((tw-8)*7)+" تقريبًا قبل الاختبار.";}
+    when.appendChild(fit);
+    box.appendChild(when);
+
+    var acts=el("div","pc-acts");
+
+    var sched=workoutsOn(todayD());
+    var todays=sched.filter(function(x){return !state.done[x.w.id]&&!state.postponed[x.w.id];});
+    var lbl,ttl;
+    if(todays.length){lbl="ما أتمرّن اليوم ("+todays.length+")";ttl="أجّل تمارين اليوم وضعها في قائمة المؤجّل";}
+    else if(sched.length&&sched.every(function(x){return state.done[x.w.id];})){
+      lbl="أنجزت تمارين اليوم ✓";ttl="كل تمارين اليوم مُعلَّمة كمُنجزة";}
+    else if(sched.length){lbl="تمارين اليوم مؤجّلة";ttl="تمارين اليوم موجودة في قائمة المؤجّل بالأسفل";}
+    else{lbl="لا تمرين اليوم";ttl="لا يوجد تمرين مجدول في تاريخ اليوم";}
+    var skip=el("button","pill"+(todays.length?" solid":""),lbl);
+    skip.type="button";skip.title=ttl;
+    if(!todays.length)skip.disabled=true;
+    skip.addEventListener("click",function(){
+      todays.forEach(function(x){state.postponed[x.w.id]=1;});rerender();});
+    acts.appendChild(skip);
+
+    [["أجّل أسبوع",7],["أجّل يوم",1],["قدّم يوم",-1]].forEach(function(p){
+      var b=el("button","pill",p[0]);b.type="button";
+      b.title=p[1]>0?"يزيح البرنامج كله "+p[1]+" أيام للأمام":"يرجع البرنامج كله يومًا للخلف";
+      b.addEventListener("click",function(){shiftBy(p[1]);});
+      acts.appendChild(b);
+    });
+
+    if(state.shift){
+      var sgn=state.shift>0?"مؤجَّل ":"مقدَّم ";
+      var rst=el("button","pill ghost","↺ "+sgn+plDays(Math.abs(state.shift)));
+      rst.type="button";rst.title="ارجع لبداية البرنامج التلقائية";
+      rst.addEventListener("click",function(){state.shift=0;if(state.weekAuto)state.week=autoWeek();rerender();});
+      acts.appendChild(rst);
+    }
+    box.appendChild(acts);
+  }
+
+  /* ---------- Render: postponed tray ---------- */
+  function renderTray(){
+    var tray=document.getElementById("tray");tray.innerHTML="";
+    var list=postponedList();
+    tray.hidden=!list.length;
+    if(!list.length)return;
+    tray.appendChild(el("span","th","مؤجّلة ("+list.length+"):"));
+    list.forEach(function(x){
+      var it=el("span","ti");
+      it.appendChild(el("span",null,"أ"+x.wk+" · "+x.w.id));
+      var un=el("button",null,"↩");un.type="button";
+      un.title="أرجِع "+x.w.id+" للجدول";
+      un.setAttribute("aria-label","أرجِع "+x.w.id+" للجدول");
+      un.addEventListener("click",function(){delete state.postponed[x.w.id];rerender();});
+      it.appendChild(un);
+      tray.appendChild(it);
+    });
+    var clr=el("button","pill ghost tclear","أرجِعها كلها");clr.type="button";
+    clr.addEventListener("click",function(){state.postponed={};rerender();});
+    tray.appendChild(clr);
+  }
+
   /* ---------- Render: week rail ---------- */
   function renderRail(){
     var rail=document.getElementById("rail");rail.innerHTML="";
@@ -1001,14 +1173,18 @@
       meta.appendChild(back);
     }
     meta.appendChild(el("p","desc",wk.desc));
+    renderTray();
 
     var grid=document.getElementById("grid");grid.innerHTML="";
     wk.days.forEach(function(day){
+      var dd=dayDate(wk.n,day);
+      var isToday=dd&&daysBetween(dd,todayD())===0;
       if(day.rest){
         var rc=el("div","card");
         rc.appendChild(el("div","stripe")).style.background="var(--line-2)";
         var rch=el("div","ch");
         var rl=el("div");rl.appendChild(el("div","day",day.name));rl.appendChild(el("div","focus",day.focus));
+        if(dd)rl.appendChild(el("div","dstamp"+(isToday?" is-today":""),isToday?"اليوم · "+fmtShort(dd):fmtShort(dd)));
         rch.appendChild(rl);
         rc.appendChild(rch);
         var rb=el("div","rest");rb.appendChild(el("div","big","راحة"));rb.appendChild(el("div",null,day.note||""));
@@ -1018,7 +1194,8 @@
       }
       var dname=day.realTest?fmtDate(state.testDate):day.name;
       (day.workouts||[]).forEach(function(w,idx){
-        var card=el("div","card");
+        var isPost=!!state.postponed[w.id]&&!state.done[w.id];
+        var card=el("div","card"+(isPost?" postponed":""));
         var zvar=ZONE_VAR[w.zone||day.zone||"z2"];
         var stripe=el("div","stripe");stripe.style.background="var("+zvar+")";card.appendChild(stripe);
         var ch=el("div","ch");
@@ -1027,8 +1204,11 @@
         info.setAttribute("title","شرح التمرين");
         ch.appendChild(info);
         var left=el("div");
-        left.appendChild(el("div","day",idx===0?dname:dname+" · إضافة"));
+        var dayLine=el("div","day",idx===0?dname:dname+" · إضافة");
+        if(isPost)dayLine.appendChild(el("span","flag","مؤجّل"));
+        left.appendChild(dayLine);
         left.appendChild(el("div","focus",w.optional?"سبرنتات RSA — تخصّصية (اختياري)":day.focus));
+        if(dd&&!day.realTest)left.appendChild(el("div","dstamp"+(isToday?" is-today":""),isToday?"اليوم · "+fmtShort(dd):fmtShort(dd)));
         ch.appendChild(left);
         var chip=el("span","chip",ZONE_LABEL[w.zone||day.zone]);
         chip.style.background="var("+ZONE_SOFT[w.zone||day.zone]+")";
@@ -1061,10 +1241,18 @@
         var cf=el("div","cf");
         var lab=el("label","donebox");
         var cb=el("input");cb.type="checkbox";cb.checked=!!state.done[w.id];
-        cb.addEventListener("change",function(){if(cb.checked)state.done[w.id]=1;else delete state.done[w.id];
-          save();renderRail();renderProgress();});
+        cb.addEventListener("change",function(){
+          if(cb.checked){state.done[w.id]=1;delete state.postponed[w.id];}else{delete state.done[w.id];}
+          rerender();});
         lab.appendChild(cb);lab.appendChild(el("span",null,"تم إنجازه"));
         cf.appendChild(lab);
+        var pp=el("button","pill ghost",isPost?"↩ أرجِعه":"أجّله");
+        pp.type="button";pp.style.padding="5px 10px";pp.style.fontSize="12px";
+        pp.title=isPost?"أرجِع هذا التمرين للجدول":"ما راح أتمرّن هذا اليوم — انقله لقائمة المؤجّل";
+        pp.addEventListener("click",function(){
+          if(isPost)delete state.postponed[w.id];else state.postponed[w.id]=1;
+          rerender();});
+        if(!state.done[w.id])cf.appendChild(pp);
         var cp=el("button","copy",'<span>⧉</span><span>نسخ الخطوات</span>');
         cp.addEventListener("click",function(){
           var txt=workoutText(w);
@@ -1083,9 +1271,16 @@
   function renderProgress(){
     var all=allWorkouts();var total=all.length;
     var done=all.filter(function(w){return state.done[w.id];}).length;
+    var post=postponedList().length;
     document.getElementById("pg-count").textContent=done;
     document.querySelectorAll(".progress .lab b")[1].textContent=total;
     document.getElementById("pg-bar").style.width=(total?Math.round(done/total*100):0)+"%";
+    var lab=document.querySelector(".progress .lab");
+    var ex=lab.querySelector(".pg-post");
+    if(post){
+      if(!ex){ex=el("span","pg-post");ex.style.color="var(--ink-3)";lab.appendChild(ex);}
+      ex.textContent=" · "+post+" مؤجّلة";
+    }else if(ex){ex.remove();}
   }
 
   /* ---------- Countdown ---------- */
@@ -1210,13 +1405,13 @@
   document.getElementById("in-date").addEventListener("change",function(){
     var v=this.value;if(v&&/^\d{4}-\d{2}-\d{2}$/.test(v)){state.testDate=v;
       if(state.weekAuto)state.week=autoWeek();
-      save();renderCountdown();renderRail();renderWeek();}
+      rerender();}
   });
   document.getElementById("pg-reset").addEventListener("click",function(){
-    if(window.confirm("تصفير كل علامات الإنجاز؟")){state.done={};save();renderRail();renderWeek();renderProgress();}
+    if(window.confirm("تصفير كل علامات الإنجاز والتأجيل؟")){state.done={};state.postponed={};rerender();}
   });
 
-  syncInputs();renderMeter();renderRail();renderWeek();renderProgress();renderCountdown();
+  syncInputs();renderMeter();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();
 })();
 </script>
 
