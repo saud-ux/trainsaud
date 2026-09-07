@@ -163,6 +163,16 @@
   .wk .badge.next{background:var(--surface);color:var(--accent-ink);border:1px solid var(--accent);box-shadow:none}
   .wk.upcoming{border-color:var(--accent)}
 
+  /* ===== Offline audio bar ===== */
+  .offline-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+  .offline-bar .ob-txt{display:flex;flex-direction:column;gap:2px;min-width:220px;flex:1}
+  .offline-bar .ob-txt b{font-size:13.5px}
+  .offline-bar .ob-txt span{font-size:12px;color:var(--ink-2);line-height:1.5}
+  .offline-bar .ob-prog{flex-basis:100%;height:6px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+  .offline-bar .ob-prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+  .offline-bar.ready{border-color:var(--accent)}
+
   /* ===== Plan control (تأجيل) ===== */
   .plan-ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);
     border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px}
@@ -189,7 +199,73 @@
     border-radius:7px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px}
   .tray .ti button{background:none;border:0;cursor:pointer;color:var(--ink-3);font-size:13px;line-height:1;padding:0}
   .tray .ti button:hover{color:var(--accent-ink)}
+  .tray .ti-date{font-family:var(--f-mono);font-size:10.5px;background:var(--bg);border:1px solid var(--line);
+    border-radius:5px;padding:1px 4px;color:var(--ink-2);color-scheme:light dark}
+  .tray .ti-date:focus{outline:2px solid var(--accent);outline-offset:1px}
   .tray .tclear{margin-inline-start:auto}
+
+  /* ===== Data / backup bar ===== */
+  .data-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;
+    background:var(--surface-2);border:1px dashed var(--line-2);border-radius:12px;padding:13px 16px}
+  .data-bar .db-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:230px}
+  .data-bar .db-txt b{font-size:13px}
+  .data-bar .db-txt span{font-size:12px;color:var(--ink-2);line-height:1.5}
+  .data-bar .db-acts{display:flex;gap:8px;flex-wrap:wrap}
+  .data-bar .db-msg{flex-basis:100%;font-size:12.5px;padding-top:4px}
+  .data-bar .db-msg.ok{color:var(--accent-ink);font-weight:600}
+  .data-bar .db-msg.err{color:var(--test);font-weight:600}
+
+  /* ===== Results ===== */
+  .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .res-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow);position:relative}
+  .res-card.has{border-color:var(--accent)}
+  .res-card .rc-lab{font-size:12px;font-weight:700;color:var(--ink-2)}
+  .res-card .rc-wk{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);margin-top:2px}
+  .res-card .rc-big{font-family:var(--f-display);font-weight:800;font-size:34px;margin-top:10px;line-height:1}
+  .res-card .rc-big .u{font-size:14px;font-weight:600;color:var(--ink-3);margin-inline-start:4px}
+  .res-card .rc-empty{font-size:14px;color:var(--ink-3);margin-top:12px}
+  .res-card .rc-meta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-2);
+    display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink-2)}
+  .res-card .rc-meta b{font-family:var(--f-mono);color:var(--ink);font-weight:600}
+  .res-card .rc-delta{margin-top:10px;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:7px;display:inline-block}
+  .res-card .rc-delta.up{background:var(--accent-soft);color:var(--accent-ink)}
+  .res-card .rc-delta.down{background:var(--test-soft);color:var(--test)}
+  .res-sum{margin-top:18px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+  .res-sum b{color:var(--ink)}
+
+  /* ===== Result form on a test card ===== */
+  .resform{margin-top:14px;border:1px dashed var(--line-2);border-radius:10px;padding:12px 14px;background:var(--surface-2)}
+  .resform .rf-h{font-size:12.5px;font-weight:700;margin-bottom:10px}
+  .resform .rf-row{display:flex;gap:10px;flex-wrap:wrap}
+  .resform label{flex:1;min-width:120px;font-size:11.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px}
+  .resform input{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;
+    font-family:var(--f-mono);font-size:14px;color:var(--ink);width:100%}
+  .resform input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .resform .rf-out{font-size:12.5px;color:var(--ink-2);margin-top:10px;line-height:1.6;min-height:1px}
+  .resform .rf-out b{font-family:var(--f-mono);color:var(--accent-ink)}
+  .resform .rf-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+  /* ===== Advice ===== */
+  .adv{border-radius:12px;padding:12px 16px;margin:0 0 14px;border:1px solid var(--line);
+    background:var(--surface);display:flex;gap:11px;align-items:flex-start}
+  .adv .ai{font-size:16px;line-height:1.35;flex:0 0 auto}
+  .adv .at{font-size:13px;font-weight:700;margin-bottom:3px}
+  .adv .am{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+  .adv.warn{border-color:var(--test);background:var(--test-soft)}
+  .adv.warn .at{color:var(--test)}
+  .adv.info{border-color:var(--accent);background:var(--accent-soft)}
+  .adv.info .at{color:var(--accent-ink)}
+
+  /* ===== RPE ===== */
+  .rpe{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+  .rpe select{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:4px 8px;
+    font-family:var(--f-mono);font-size:12px;color:var(--ink);cursor:pointer}
+  .rpe select:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .rpe .rv{font-family:var(--f-mono);font-weight:700;padding:2px 8px;border-radius:6px;
+    background:var(--surface-2);border:1px solid var(--line)}
+  .rpe .rv.hard{background:var(--test-soft);color:var(--test);border-color:var(--test)}
 
   /* ===== Postponed card ===== */
   .card.postponed{opacity:.62;border-style:dashed}
@@ -417,6 +493,15 @@
         <span class="go">تشغيل ←</span>
       </button>
 
+      <div class="offline-bar" id="offlineBar" hidden>
+        <div class="ob-txt">
+          <b id="ob-title">حمّل الصوت للاستخدام دون إنترنت</b>
+          <span id="ob-sub">تسجيل الاختبار ≈٢٨ ميجا. حمّله مرة واحدة على الشبكة ليعمل يوم الاختبار بلا إنترنت.</span>
+        </div>
+        <div class="ob-prog" id="ob-prog" hidden><i id="ob-fill"></i></div>
+        <button class="pill solid" id="ob-btn" type="button">حمّل الآن</button>
+      </div>
+
       <div class="profile" aria-label="ملفّي">
         <div class="stat"><div class="k">العمر</div><div class="v">20<span class="u"> سنة</span></div></div>
         <div class="stat"><div class="k">الوزن</div><div class="v">63<span class="u"> كجم</span></div></div>
@@ -462,6 +547,7 @@
       <div class="rail" id="rail" role="tablist" aria-label="الأسابيع"></div>
       <div class="week-meta" id="weekMeta"></div>
       <div class="tray" id="tray" hidden></div>
+      <div id="advice"></div>
       <div class="grid" id="grid"></div>
 
       <div class="progress">
@@ -469,11 +555,35 @@
         <div class="bar"><i id="pg-bar" style="width:0%"></i></div>
         <button class="reset" id="pg-reset">تصفير التقدّم</button>
       </div>
+
+      <div class="data-bar">
+        <div class="db-txt"><b>بياناتك محفوظة على هذا المتصفّح فقط</b>
+          <span>تنظيف بيانات الموقع أو تبديل الجهاز يمسح تقدّمك. صدّر نسخة احتياطية بين حين وآخر.</span></div>
+        <div class="db-acts">
+          <button class="pill" id="db-export" type="button">⭳ نسخة احتياطية</button>
+          <button class="pill" id="db-import" type="button">⭱ استيراد</button>
+          <button class="pill" id="db-ics" type="button">📅 صدّر التقويم</button>
+          <input id="db-file" type="file" accept="application/json,.json" hidden>
+        </div>
+        <div class="db-msg" id="db-msg" hidden></div>
+      </div>
+    </section>
+
+    <section class="block" id="results">
+      <div class="sec-head">
+        <span class="num">03</span><h2>نتائجك</h2>
+        <p>في البرنامج ثلاثة اختبارات: تجريبيّان (نهاية الأسبوع ٤ والأسبوع ٧) ثم الاختبار الحقيقي. سجّل المسافة بعد كل واحد
+          — هي نتيجتك الرسمية، ومنها يُقدَّر
+          <span class="ltr">VO2max</span>
+          بمعادلة
+          <span class="ltr">Bangsbo</span>.</p>
+      </div>
+      <div id="resultsPanel"></div>
     </section>
 
     <section class="block" id="how">
       <div class="sec-head">
-        <span class="num">03</span><h2>الإدخال والمزامنة والتشغيل</h2>
+        <span class="num">04</span><h2>الإدخال والمزامنة والتشغيل</h2>
         <p>كل ما تحتاجه لنقل التمارين إلى ساعتك وتشغيلها بالاهتزاز وحده.</p>
       </div>
       <div class="guides">
@@ -546,7 +656,9 @@
               الرسمية لتوليد ملف
               <span class="ltr">.FIT</span>
               لكل تمرين دفعة واحدة.</p>
-            <div class="codehead"><span class="fn">// setup: npm i @garmin/fitsdk</span><button class="copy" data-copy="fit">⧉ نسخ السكربت</button></div>
+            <div class="codehead"><span class="fn">// setup: npm i @garmin/fitsdk</span>
+              <button class="copy" data-copy="fit">⧉ نسخ السكربت</button>
+              <button class="copy" id="fit-dl">⭳ نزّل الملف</button></div>
             <pre><code id="fitcode"></code></pre>
             <div class="warn"><b>تنبيه مهم:</b> خيار
               <span class="ltr">Import</span>
@@ -645,6 +757,10 @@
           <button class="pbtn" id="yy-pause" type="button" disabled>⏸ إيقاف</button>
           <button class="pbtn warn2" id="yy-reset" type="button">↺ تصفير</button>
         </div>
+        <div class="prow" id="yy-saverow" hidden style="justify-content:space-between">
+          <span id="yy-savelab" style="font-size:12.5px;color:var(--ink-2)">توقّفت هنا؟ احفظ المسافة كنتيجتك.</span>
+          <button class="pbtn primary" id="yy-save" type="button" style="flex:0 0 auto;min-width:0;padding:9px 14px;font-size:13px">💾 احفظ <span id="yy-savedist">0</span> م</button>
+        </div>
         <div class="prow"><label for="yy-vol">الصوت</label>
           <input id="yy-vol" type="range" min="0" max="100" value="80">
           <button class="pbtn" id="yy-test" type="button" style="flex:0 0 auto;min-width:0;padding:9px 12px;font-size:13px">⏭ تخطّي المقدّمة</button></div>
@@ -677,6 +793,21 @@
       {t:"Run",d:"Lap Button",tg:"lap",hint:"الاختبار كامل يقوده صوت الجوال — اضغط Lap عند التوقّف النهائي."},
       cd("10:00")
     ], notes:"البروتوكول يقوده الجوال بالصوت والساعة تسجّل فقط. لا هدف نبض هنا — Lap Button مقصود. سجّل المستوى/المسافة التي وصلتها لمقارنتها لاحقًا."};
+  }
+  function ex(d,hint){return{t:"Exercise",d:d,tg:"none",hint:hint};}
+  /* وقاية من الإصابة: البرنامج فيه سبرنتات ومحاكاة يو‑يو تحمّل الأوتار الخلفية
+     والسمانة بشدّة. النورديك أقوى تمرين مثبت لخفض شدّ الأوتار الخلفية. */
+  function strWkt(id){
+    return {id:id,title:id,activity:"Strength",zone:"str",strength:true,steps:[
+      wu("05:00"),
+      rep(3,[ex("00:40","نورديك للأوتار الخلفية — ٦ تكرارات، النزول بطيء ٣–٤ ثوانٍ وقاوم حتى النهاية."),
+             {t:"Rest",d:"01:00",tg:"none"}]),
+      rep(3,[ex("00:45","رفع السمانة على ساق واحدة — ١٢ تكرارًا لكل ساق، ارتفاع كامل ونزول محكوم."),
+             {t:"Rest",d:"00:45",tg:"none"}]),
+      rep(2,[ex("00:40","بلانك جانبي — ٢٠ ثانية لكل جهة."),
+             {t:"Rest",d:"00:30",tg:"none"}]),
+      cdl("03:00")
+    ], notes:"تقوية وقائية ≈١٥ دقيقة، مرّتين أسبوعيًا. النورديك هو الأهم — يخفّض شدّ الأوتار الخلفية بشكل معتبر عند من يجري سبرنتات متكررة. نفّذها بعد الجري أو في يوم مستقل، ولا تضعها قبل ٢٤ ساعة من تمرين شدّة."};
   }
   function rsaWkt(id){
     return {id:id,title:id,activity:"Run",zone:"z5",optional:true,steps:[
@@ -743,21 +874,43 @@
     ]}
   ];
 
-  var ZONE_LABEL={z1:"استشفاء",z2:"هوائي",z3:"عتبة",z4:"لاهوائي",z5:"قصوى",test:"اختبار"};
-  var ZONE_VAR={z1:"--z1",z2:"--z2",z3:"--z3",z4:"--z4",z5:"--z5",test:"--test"};
-  var ZONE_SOFT={z1:"--z1-soft",z2:"--z2-soft",z3:"--z3-soft",z4:"--z4-soft",z5:"--z5-soft",test:"--test-soft"};
+  /* توزيع تمارين التقوية: على اليومين الشديدين (الأحد والخميس) لتبقى أيام
+     الاستشفاء خفيفة فعلًا. الأسبوع ٤ (استشفاء) جلسة واحدة، الأسبوع ٧ واحدة
+     مبكّرة قبل اختبار السبت، والأسبوع ٨ (تخفيف) بلا تقوية إطلاقًا. */
+  var STRENGTH_PLAN={1:["الأحد","الخميس"],2:["الأحد","الخميس"],3:["الأحد","الخميس"],
+                     4:["الأحد"],5:["الأحد","الخميس"],6:["الأحد","الخميس"],7:["الأحد"],8:[]};
+  WEEKS.forEach(function(wk){
+    (STRENGTH_PLAN[wk.n]||[]).forEach(function(nm){
+      var i=-1;
+      wk.days.forEach(function(d,k){if(d.name===nm&&!d.rest&&d.workouts)i=k;});
+      if(i<0)return;
+      wk.days[i].workouts.push(strWkt("W"+wk.n+"-D"+(i+1)+"-Strength"));
+    });
+  });
+
+  var ZONE_LABEL={z1:"استشفاء",z2:"هوائي",z3:"عتبة",z4:"لاهوائي",z5:"قصوى",test:"اختبار",str:"قوة"};
+  var ZONE_VAR={z1:"--z1",z2:"--z2",z3:"--z3",z4:"--z4",z5:"--z5",test:"--test",str:"--z1"};
+  var ZONE_SOFT={z1:"--z1-soft",z2:"--z2-soft",z3:"--z3-soft",z4:"--z4-soft",z5:"--z5-soft",test:"--test-soft",str:"--z1-soft"};
 
   /* ---------- State ---------- */
   /* shift = عدد أيام تأجيل بداية البرنامج عن بدايته التلقائية (سالب = تقديم).
      postponed = التمارين المؤجّلة {id:1} — دَيْن تحمله معك حتى تؤدّيه أو تسقطه. */
-  var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true,shift:0,postponed:{}};
-  try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&typeof s==="object"){
+  var state={age:20,rhr:48,max:null,week:null,done:{},testDate:DEFAULT_DATE,weekAuto:true,
+             shift:0,postponed:{},moved:{},results:{},rpe:{}};
+  function applyState(s){
+    if(!s||typeof s!=="object")return false;
     if(s.age)state.age=+s.age; if(s.rhr)state.rhr=+s.rhr; if(s.max)state.max=+s.max;
     if(s.week)state.week=+s.week; if(s.done)state.done=s.done;
-    if(s.weekAuto===false)state.weekAuto=false;
+    if(s.weekAuto===false)state.weekAuto=false; else if(s.weekAuto===true)state.weekAuto=true;
     if(typeof s.shift==="number"&&isFinite(s.shift))state.shift=Math.max(-56,Math.min(120,Math.round(s.shift)));
     if(s.postponed)state.postponed=s.postponed;
-    if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;}}}catch(e){}
+    if(s.moved)state.moved=s.moved;
+    if(s.results)state.results=s.results;
+    if(s.rpe)state.rpe=s.rpe;
+    if(s.testDate&&/^\d{4}-\d{2}-\d{2}$/.test(s.testDate))state.testDate=s.testDate;
+    return true;
+  }
+  try{var raw=localStorage.getItem(LS_KEY);if(raw)applyState(JSON.parse(raw));}catch(e){}
 
   /* ---------- Dates ---------- */
   var DAY=86400000;
@@ -777,6 +930,14 @@
     if(day.realTest)return dOnly(testDate());
     var off=DAY_OFF[day.name];if(off==null)return null;
     return addDays(startDate(),(weekN-1)*7+off);
+  }
+  /* التاريخ الفعلي لتمرين: تاريخه المنقول إن نُقل، وإلا تاريخ يومه في الجدول. */
+  function effDate(weekN,day,w){
+    if(w&&state.moved[w.id]){
+      var d=new Date(state.moved[w.id]+"T00:00:00");
+      if(!isNaN(d))return dOnly(d);
+    }
+    return dayDate(weekN,day);
   }
   /* في أي أسبوع من البرنامج يقع يوم الاختبار؟ ٨ = مضبوط، أقل = البرنامج لن يكتمل قبله. */
   function testWeek(){var d=daysBetween(startDate(),testDate());return d<0?0:Math.floor(d/7)+1;}
@@ -903,6 +1064,14 @@
       vib:"أبقِ الجهد ضمن الهادئ؛ الاهتزاز ينبّهك لو زدت.",
       effort:"خفيف جدًا — لا يُتعب إطلاقًا.",
       mistake:"لا تختبر لياقتك اليوم؛ وفّرها للاختبار غدًا."},
+    strength:{purpose:"وقاية من الإصابة — تقوية الأوتار الخلفية والسمانة، وهي الأكثر تعرّضًا للشدّ في الجري المتقطّع والسبرنتات.",
+      steps:["<b>نورديك:</b> اركع وثبّت كاحليك (شريك أو تحت شيء ثقيل). انزل للأمام ببطء ٣–٤ ثوانٍ مقاومًا حتى آخر مدى تتحمّله، ثم ادفع بيديك للعودة. ٦ تكرارات.",
+        "<b>رفع السمانة على ساق واحدة:</b> قف على حافة درجة، انزل بالكعب تحت المستوى ثم ارتفع كاملًا. ١٢ لكل ساق، نزول محكوم لا ارتداد.",
+        "<b>بلانك جانبي:</b> ٢٠ ثانية لكل جهة، الحوض مرفوع والجسم على خط واحد.",
+        "الراحة بين المجموعات كما تقودك الساعة."],
+      vib:"لا هدف نبض — الاهتزاز يفصل بين مجموعات العمل والراحة فقط. عدّ التكرارات بنفسك.",
+      effort:"معتدل. الهدف تحكّم في الحركة لا إرهاق — تتوقّف قبل انهيار الأداء.",
+      mistake:"لا تبدأ بحجم كبير: النورديك يسبّب ألم عضلات متأخّرًا شديدًا أول أسبوعين. ولا تضعها قبل ٢٤ ساعة من تمرين شدّة أو اختبار."},
     test:{purpose:"قياس تقدّمك بالبروتوكول الكامل (نتيجتك = المسافة عند العجز).",
       steps:["أكمل الإحماء (١٢ دقيقة، تقودك الخطوة بالنبض).",
         "<b>اضغط زر اللفة (Lap):</b> عُد للجوال، افتح «مشغّل صافرات YYIR1»، ارجع لخط البداية.",
@@ -914,6 +1083,7 @@
       mistake:"لا توقف الساعة بالخطأ بدل Lap — تدرّب على الأزرار قبل يوم الاختبار."}
   };
   function typeOf(w){var id=w.id||"";
+    if(/Strength/.test(id))return"strength";
     if(/Tempo/.test(id))return"tempo"; if(/YoYo/.test(id))return"yoyo";
     if(/EasyLong/.test(id))return"easylong"; if(/VO2/.test(id))return"vo2";
     if(/Sharp/.test(id))return"sharp"; if(/RSA/.test(id))return"rsa";
@@ -1023,17 +1193,194 @@
     return lines.join("\n");
   }
 
+  /* ---------- Test results ---------- */
+  var TESTS=[
+    {id:"W4-D4-Test",    label:"تجريبي ١", wk:4},
+    {id:"W7-D4-Test",    label:"تجريبي ٢", wk:7},
+    {id:"W8-D5-RealTest",label:"الاختبار الحقيقي", wk:8}
+  ];
+  function isTestId(id){return TESTS.some(function(t){return t.id===id;});}
+  /* Bangsbo et al.: VO2max ≈ مسافة اليو‑يو (م) × 0.0084 + 36.4 */
+  function vo2max(dist){return dist>0?(dist*0.0084+36.4):null;}
+  /* المستوى/السرعة المقابلة لمسافة، من جدول الصوت المستخرَج. */
+  function levelForDist(dist){
+    var LV=(window.__YOYO_TL&&window.__YOYO_TL.lv)||[],best=null;
+    for(var i=0;i<LV.length;i++){if(dist>LV[i][4])best=LV[i];}
+    return best; /* [مستوى, وقت, سرعة, _, من, إلى] */
+  }
+  /* النتائج المسجّلة بترتيب البرنامج. */
+  function resultRows(){
+    return TESTS.map(function(t){return {t:t,r:state.results[t.id]||null};});
+  }
+  function prevResult(id){
+    var idx=TESTS.findIndex(function(t){return t.id===id;}),p=null;
+    for(var i=0;i<idx;i++){if(state.results[TESTS[i].id])p={t:TESTS[i],r:state.results[TESTS[i].id]};}
+    return p;
+  }
+
+  /* نموذج تسجيل النتيجة داخل بطاقة الاختبار. */
+  function buildResultForm(w){
+    var box=el("div","resform");
+    box.appendChild(el("div","rf-h","📋 سجّل نتيجتك في هذا الاختبار"));
+    var r=state.results[w.id]||{};
+    var row=el("div","rf-row");
+    var dl=el("label",null,"المسافة التي وصلتها (م)");
+    var di=el("input");di.type="number";di.min="0";di.max="4480";di.step="20";di.inputMode="numeric";
+    di.value=(r.dist!=null?r.dist:"");di.placeholder="مثال: 1240";dl.appendChild(di);
+    var hl=el("label",null,"أعلى نبض سجّلته الساعة");
+    var hi=el("input");hi.type="number";hi.min="120";hi.max="230";hi.inputMode="numeric";
+    hi.value=(r.hr!=null?r.hr:"");hi.placeholder="اختياري";hl.appendChild(hi);
+    row.appendChild(dl);row.appendChild(hl);box.appendChild(row);
+    var out=el("div","rf-out");box.appendChild(out);
+    var acts=el("div","rf-acts");box.appendChild(acts);
+
+    function paint(){
+      out.innerHTML="";acts.innerHTML="";
+      var cur=state.results[w.id];
+      var d=+di.value||0;
+      if(d>0){
+        var v=vo2max(d),L=levelForDist(d);
+        var bits="تقدير <span class='ltr'>VO2max</span>: <b>"+v.toFixed(1)+"</b> مل/كجم/د";
+        if(L)bits+=" · المستوى <b>"+L[0]+"</b> عند <b>"+L[2]+"</b> كم/س";
+        var p=prevResult(w.id);
+        if(p&&p.r.dist){
+          var diff=d-p.r.dist,pct=Math.round(diff/p.r.dist*100);
+          bits+="<br>مقارنةً بـ«"+p.t.label+"»: <b>"+(diff>=0?"+":"−")+Math.abs(diff)+"</b> م ("+(diff>=0?"+":"−")+Math.abs(pct)+"٪)";
+        }
+        out.innerHTML=bits;
+      }
+      var sv=el("button","pill solid",cur?"حدّث النتيجة":"احفظ النتيجة");sv.type="button";
+      sv.addEventListener("click",function(){
+        var dist=+di.value,hr=+hi.value;
+        if(!(dist>0)){out.textContent="أدخل مسافة أكبر من صفر.";return;}
+        state.results[w.id]={dist:dist,hr:hr>0?hr:null,date:toISO(todayD())};
+        state.done[w.id]=1;delete state.postponed[w.id];
+        rerender();
+      });
+      acts.appendChild(sv);
+
+      /* معايرة النبض الأقصى من نبض الاختبار الفعلي. */
+      var hrv=+hi.value;
+      if(hrv>=120&&hrv<=230&&hrv!==hrmax()){
+        var cal=el("button","pill","اعتمده كنبض أقصى ("+hrv+")");cal.type="button";
+        cal.title="يستبدل تقدير Tanaka بقياسك الفعلي ويعيد حساب كل نطاقات النبض";
+        cal.addEventListener("click",function(){
+          state.max=hrv;
+          if(state.results[w.id])state.results[w.id].hr=hrv;
+          syncInputs();rerender();renderMeter();renderFit();
+        });
+        acts.appendChild(cal);
+      }
+      if(cur){
+        var del=el("button","pill ghost","احذف النتيجة");del.type="button";
+        del.addEventListener("click",function(){delete state.results[w.id];rerender();});
+        acts.appendChild(del);
+      }
+    }
+    di.addEventListener("input",paint);hi.addEventListener("input",paint);
+    paint();
+    return box;
+  }
+
+  /* ---------- Render: results panel ---------- */
+  function renderResults(){
+    var host=document.getElementById("resultsPanel");if(!host)return;
+    host.innerHTML="";
+    var grid=el("div","res-grid"),rows=resultRows(),lastSeen=null;
+    rows.forEach(function(x){
+      var c=el("div","res-card"+(x.r?" has":""));
+      c.appendChild(el("div","rc-lab",x.t.label));
+      c.appendChild(el("div","rc-wk","أسبوع "+x.t.wk+" · "+x.t.id));
+      if(!x.r){
+        c.appendChild(el("div","rc-empty","لم يُسجَّل بعد — سجّله من بطاقة الاختبار في الأسبوع "+x.t.wk+"."));
+      }else{
+        var big=el("div","rc-big",x.r.dist+'<span class="u">م</span>');
+        c.appendChild(big);
+        var meta=el("div","rc-meta");
+        var v=vo2max(x.r.dist),L=levelForDist(x.r.dist);
+        meta.appendChild(el("div",null,'تقدير <span class="ltr">VO2max</span>: <b>'+v.toFixed(1)+"</b> مل/كجم/د"));
+        if(L)meta.appendChild(el("div",null,"المستوى: <b>"+L[0]+"</b> عند <b>"+L[2]+"</b> كم/س"));
+        if(x.r.hr)meta.appendChild(el("div",null,"أعلى نبض: <b>"+x.r.hr+"</b> ن/د"));
+        meta.appendChild(el("div",null,"التاريخ: "+fmtDate(x.r.date)));
+        c.appendChild(meta);
+        if(lastSeen){
+          var diff=x.r.dist-lastSeen.r.dist,pct=Math.round(diff/lastSeen.r.dist*100);
+          c.appendChild(el("div","rc-delta "+(diff>=0?"up":"down"),
+            (diff>=0?"▲ +":"▼ −")+Math.abs(diff)+" م ("+(diff>=0?"+":"−")+Math.abs(pct)+"٪) عن "+lastSeen.t.label));
+        }
+        lastSeen=x;
+      }
+      grid.appendChild(c);
+    });
+    host.appendChild(grid);
+
+    var have=rows.filter(function(x){return x.r;});
+    var sum=el("div","res-sum");
+    if(!have.length){
+      sum.innerHTML="لا نتائج بعد. بعد كل اختبار افتح بطاقته في الأسبوع المقابل وأدخل المسافة — سيظهر تقدّمك هنا بالأرقام.";
+    }else{
+      var f=have[0],l=have[have.length-1];
+      var bits=[];
+      bits.push("سجّلت <b>"+have.length+"</b> من <b>3</b> اختبارات.");
+      if(have.length>1){
+        var d=l.r.dist-f.r.dist,p=Math.round(d/f.r.dist*100);
+        var dv=vo2max(l.r.dist)-vo2max(f.r.dist);
+        bits.push("بين «"+f.t.label+"» و«"+l.t.label+"»: <b>"+(d>=0?"+":"−")+Math.abs(d)+"</b> م ("+
+          (d>=0?"+":"−")+Math.abs(p)+"٪)، أي <b>"+(dv>=0?"+":"−")+Math.abs(dv).toFixed(1)+
+          '</b> في تقدير <span class="ltr">VO2max</span>.');
+      }
+      if(l.r.hr){
+        bits.push("أعلى نبض مسجَّل: <b>"+l.r.hr+"</b> ن/د"+(l.r.hr===hrmax()?" — وهو المعتمد في نطاقاتك.":
+          " — تقدر تعتمده بدل التقدير الحالي ("+hrmax()+") من بطاقة الاختبار."));
+      }
+      sum.innerHTML=bits.join("<br>");
+    }
+    host.appendChild(sum);
+  }
+
+  /* جسر للمشغّل (سكربت منفصل): يحفظ المسافة في الاختبار الصحيح. */
+  window.__saveResult=function(id,dist){
+    if(!isTestId(id)||!(dist>0))return false;
+    var prev=state.results[id]||{};
+    state.results[id]={dist:dist,hr:prev.hr||null,date:toISO(todayD())};
+    state.done[id]=1;delete state.postponed[id];
+    rerender();return true;
+  };
+  window.__testLabel=function(id){
+    var t=TESTS.filter(function(x){return x.id===id;})[0];return t?t.label:id;
+  };
+  /* أقرب اختبار لم يُسجَّل بعد — يُستخدم لو فُتح المشغّل من الزر العام. */
+  window.__nextTestId=function(){
+    for(var i=0;i<TESTS.length;i++){if(!state.results[TESTS[i].id])return TESTS[i].id;}
+    return TESTS[TESTS.length-1].id;
+  };
+
   /* ---------- Postpone helpers ---------- */
   /* كل تمارين البرنامج المجدولة في تاريخ معيّن (يوم الراحة لا يُعيد شيئًا). */
   function workoutsOn(date){
     var out=[];
     WEEKS.forEach(function(wk){
       wk.days.forEach(function(day){
-        var dd=dayDate(wk.n,day);
-        if(!dd||daysBetween(dd,date)!==0)return;
-        (day.workouts||[]).forEach(function(w){out.push({wk:wk.n,day:day,w:w});});
+        (day.workouts||[]).forEach(function(w){
+          var dd=effDate(wk.n,day,w);
+          if(dd&&daysBetween(dd,date)===0)out.push({wk:wk.n,day:day,w:w});
+        });
       });
     });
+    return out;
+  }
+  /* كل تمارين البرنامج مع تواريخها الفعلية، مرتّبة زمنيًا (للتقويم والتصدير). */
+  function scheduleAll(){
+    var out=[];
+    WEEKS.forEach(function(wk){
+      wk.days.forEach(function(day){
+        (day.workouts||[]).forEach(function(w){
+          var dd=effDate(wk.n,day,w);
+          if(dd)out.push({wk:wk.n,day:day,w:w,date:dd,moved:!!state.moved[w.id]});
+        });
+      });
+    });
+    out.sort(function(a,b){return a.date-b.date;});
     return out;
   }
   function postponedList(){
@@ -1042,7 +1389,7 @@
       if(state.postponed[w.id]&&!state.done[w.id])out.push({wk:wk.n,w:w});});});
     return out;
   }
-  function rerender(){save();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();}
+  function rerender(){save();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();renderResults();}
   function shiftBy(n){
     state.shift=Math.max(-56,Math.min(120,(state.shift||0)+n));
     if(state.weekAuto)state.week=autoWeek();
@@ -1118,16 +1465,120 @@
     list.forEach(function(x){
       var it=el("span","ti");
       it.appendChild(el("span",null,"أ"+x.wk+" · "+x.w.id));
+      /* انقله إلى تاريخ محدّد بدل إرجاعه لموضعه الأصلي فقط. */
+      var dt=el("input");dt.type="date";dt.className="ti-date";
+      dt.value=state.moved[x.w.id]||toISO(todayD());
+      dt.title="انقل "+x.w.id+" إلى هذا التاريخ";
+      dt.setAttribute("aria-label","انقل "+x.w.id+" إلى تاريخ");
+      dt.addEventListener("change",function(){
+        if(/^\d{4}-\d{2}-\d{2}$/.test(dt.value)){
+          state.moved[x.w.id]=dt.value;delete state.postponed[x.w.id];rerender();
+        }
+      });
+      it.appendChild(dt);
       var un=el("button",null,"↩");un.type="button";
-      un.title="أرجِع "+x.w.id+" للجدول";
-      un.setAttribute("aria-label","أرجِع "+x.w.id+" للجدول");
-      un.addEventListener("click",function(){delete state.postponed[x.w.id];rerender();});
+      un.title="أرجِع "+x.w.id+" لموعده الأصلي";
+      un.setAttribute("aria-label","أرجِع "+x.w.id+" لموعده الأصلي");
+      un.addEventListener("click",function(){
+        delete state.postponed[x.w.id];delete state.moved[x.w.id];rerender();});
       it.appendChild(un);
       tray.appendChild(it);
     });
     var clr=el("button","pill ghost tclear","أرجِعها كلها");clr.type="button";
-    clr.addEventListener("click",function(){state.postponed={};rerender();});
+    clr.addEventListener("click",function(){
+      list.forEach(function(x){delete state.postponed[x.w.id];delete state.moved[x.w.id];});
+      rerender();});
     tray.appendChild(clr);
+  }
+
+  var howtoOpen={};   /* الشروح المفتوحة، تبقى مفتوحة بعد إعادة الرسم */
+
+  /* ---------- RPE + advice ---------- */
+  var RPE_LABEL={1:"خفيف جدًا",2:"خفيف جدًا",3:"خفيف",4:"خفيف",5:"متوسط",6:"متوسط",
+                 7:"صعب",8:"صعب",9:"أقصى",10:"أقصى"};
+  /* التمارين المقيَّمة مرتّبة زمنيًا. */
+  function ratedHistory(){return scheduleAll().filter(function(x){return state.rpe[x.w.id]>0;});}
+  function weekRpe(n){
+    var v=[];weekWorkouts(WEEKS[n-1]).forEach(function(w){if(state.rpe[w.id]>0)v.push(state.rpe[w.id]);});
+    if(!v.length)return null;
+    return v.reduce(function(a,b){return a+b;},0)/v.length;
+  }
+  /* نسبة إنجاز كتلة أسابيع (التمارين الاختيارية لا تُحتسب). */
+  function blockDone(from,to){
+    var tot=0,done=0;
+    for(var n=from;n<=to;n++){
+      weekWorkouts(WEEKS[n-1]).forEach(function(w){
+        if(w.optional)return;tot++;if(state.done[w.id])done++;});
+    }
+    return {tot:tot,done:done,pct:tot?done/tot:0};
+  }
+  function buildRpe(w){
+    var box=el("div","rpe");
+    box.appendChild(el("span",null,"الجهد:"));
+    var sel=document.createElement("select");
+    sel.setAttribute("aria-label","تقييم الجهد المبذول في "+w.id);
+    var o0=document.createElement("option");o0.value="";o0.textContent="— قيّمه";sel.appendChild(o0);
+    for(var i=1;i<=10;i++){
+      var o=document.createElement("option");o.value=i;o.textContent=i+" · "+RPE_LABEL[i];sel.appendChild(o);
+    }
+    sel.value=state.rpe[w.id]||"";
+    sel.addEventListener("change",function(){
+      var v=+sel.value;
+      if(v>=1&&v<=10)state.rpe[w.id]=v;else delete state.rpe[w.id];
+      rerender();
+    });
+    box.appendChild(sel);
+    var cur=state.rpe[w.id];
+    if(cur)box.appendChild(el("span","rv"+(cur>=8?" hard":""),cur+"/10"));
+    return box;
+  }
+
+  function renderAdvice(){
+    var host=document.getElementById("advice");if(!host)return;
+    host.innerHTML="";
+    var out=[],wkN=state.week;
+
+    /* ١. حِمل مرتفع متواصل. */
+    var last3=ratedHistory().slice(-3);
+    if(last3.length===3){
+      var avg=last3.reduce(function(a,x){return a+state.rpe[x.w.id];},0)/3;
+      if(avg>=8)out.push({k:"warn",i:"🔥",t:"حِمل مرتفع",
+        m:"آخر ٣ تمارين قيّمتها بمعدّل <b>"+avg.toFixed(1)+"/١٠</b>. لو رافق ذلك نوم أسوأ أو نبض راحة أعلى من "+
+          state.rhr+"، فخفّف الحجم ٢٠–٣٠٪ ليومين إلى ثلاثة — التكيّف يحصل في الاستشفاء لا في الإجهاد."});
+    }
+
+    /* ٢. تأجيلات متراكمة في الأسبوع المعروض. */
+    var pw=weekWorkouts(WEEKS[wkN-1]).filter(function(w){
+      return state.postponed[w.id]&&!state.done[w.id];}).length;
+    if(pw>=2)out.push({k:"warn",i:"⏸",t:"تأجيلات متراكمة",
+      m:"أجّلت <b>"+pw+"</b> تمارين في الأسبوع "+wkN+". محاولة تعويضها كلها في أيام متتالية أسوأ من تخطّيها — "+
+        "اختر الأهم (تمرين محاكاة اليو‑يو) ودع الباقي، أو انقل التمارين لتواريخ متباعدة من شريط المؤجّل."});
+
+    /* ٣. استشارة التخفيف في الأسبوع الثامن، مبنيّة على ما أُنجز فعلًا في ٥–٧. */
+    if(wkN===8){
+      var b=blockDone(5,7),p=Math.round(b.pct*100);
+      if(b.pct>=0.8){
+        out.push({k:"info",i:"✅",t:"التخفيف المعتاد مناسب لك",
+          m:"أنجزت <b>"+b.done+"/"+b.tot+"</b> ("+p+"٪) من أسابيع ٥–٧. حملت تعبًا حقيقيًا، والتخفيف كما هو مكتوب "+
+            "هو ما يحوّله لأداء. لا تضف شيئًا، ولا تجرّب أي جديد هذا الأسبوع."});
+      }else if(b.pct>=0.5){
+        out.push({k:"info",i:"↔",t:"خفّف أقل قليلًا",
+          m:"أنجزت <b>"+b.done+"/"+b.tot+"</b> ("+p+"٪) من أسابيع ٥–٧، أي تعبك المتراكم أقل من المفترض. "+
+            "أبقِ شحذ الأحد كما هو، ولك أن تزيد هرولة الثلاثاء ٥–١٠ دقائق. لا تزد الشدّة."});
+      }else{
+        out.push({k:"warn",i:"⚠",t:"التخفيف الكامل قد يضرّك هنا",
+          m:"أنجزت <b>"+b.done+"/"+b.tot+"</b> فقط ("+p+"٪) من أسابيع ٥–٧. مشكلتك نقص تدريب لا تعب متراكم، "+
+            "والتخفيف يفيد من تعب. أبقِ شحذ الأحد، وأضف جلسة محاكاة يو‑يو خفيفة (٦×٤٥/٧٥) يوم الثلاثاء، "+
+            "واحتفظ بـ ≥٧٢ ساعة راحة قبل الاختبار. توقّع نتيجة أقل من المستهدف — وهذا معلومة مفيدة لا فشل."});
+      }
+    }
+
+    out.forEach(function(a){
+      var box=el("div","adv "+a.k);
+      box.appendChild(el("div","ai",a.i));
+      var t=el("div");t.appendChild(el("div","at",a.t));t.appendChild(el("div","am",a.m));
+      box.appendChild(t);host.appendChild(box);
+    });
   }
 
   /* ---------- Render: week rail ---------- */
@@ -1172,8 +1623,10 @@
       back.addEventListener("click",function(){state.weekAuto=true;state.week=autoWeek();save();renderRail();renderWeek();});
       meta.appendChild(back);
     }
+    var wr=weekRpe(wk.n);
+    if(wr!=null)meta.appendChild(el("span","vol","معدّل الجهد: "+wr.toFixed(1)+"/10"));
     meta.appendChild(el("p","desc",wk.desc));
-    renderTray();
+    renderTray();renderAdvice();
 
     var grid=document.getElementById("grid");grid.innerHTML="";
     wk.days.forEach(function(day){
@@ -1207,8 +1660,12 @@
         var dayLine=el("div","day",idx===0?dname:dname+" · إضافة");
         if(isPost)dayLine.appendChild(el("span","flag","مؤجّل"));
         left.appendChild(dayLine);
-        left.appendChild(el("div","focus",w.optional?"سبرنتات RSA — تخصّصية (اختياري)":day.focus));
-        if(dd&&!day.realTest)left.appendChild(el("div","dstamp"+(isToday?" is-today":""),isToday?"اليوم · "+fmtShort(dd):fmtShort(dd)));
+        left.appendChild(el("div","focus",
+          w.strength?"تقوية وقائية — نورديك وسمانة (≈١٥ د)":
+          w.optional?"سبرنتات RSA — تخصّصية (اختياري)":day.focus));
+        var wd=effDate(wk.n,day,w),wToday=wd&&daysBetween(wd,todayD())===0,isMoved=!!state.moved[w.id];
+        if(wd&&!day.realTest)left.appendChild(el("div","dstamp"+(wToday?" is-today":""),
+          (isMoved?"↷ نُقل إلى ":"")+(wToday?"اليوم · ":"")+fmtShort(wd)));
         ch.appendChild(left);
         var chip=el("span","chip",ZONE_LABEL[w.zone||day.zone]);
         chip.style.background="var("+ZONE_SOFT[w.zone||day.zone]+")";
@@ -1217,7 +1674,11 @@
         card.appendChild(ch);
 
         var howto=buildHowto(typeOf(w));card.appendChild(howto);
+        /* الشبكة تُعاد بناؤها عند أي تغيير، فنحتفظ بالشروح المفتوحة كما هي. */
+        howto.hidden=!howtoOpen[w.id];
+        info.setAttribute("aria-expanded",howtoOpen[w.id]?"true":"false");
         info.addEventListener("click",function(){var show=howto.hidden;howto.hidden=!show;
+          if(show)howtoOpen[w.id]=1;else delete howtoOpen[w.id];
           info.setAttribute("aria-expanded",show?"true":"false");});
 
         var body=el("div","body");
@@ -1233,9 +1694,10 @@
           var pb=el("button","playcta");pb.type="button";pb.style.marginTop="12px";
           pb.innerHTML='<span class="ic">🔊</span><span><span class="tt">شغّل صافرات هذا الاختبار</span>'+
             '<span class="ss">نغمات YYIR1 بالسرعات الصحيحة — بلا تطبيق منفصل</span></span><span class="go">تشغيل ←</span>';
-          pb.addEventListener("click",function(){if(window.__openYoyo)window.__openYoyo();});
+          pb.addEventListener("click",function(){if(window.__openYoyo)window.__openYoyo(w.id);});
           body.appendChild(pb);
         }
+        if(isTestId(w.id))body.appendChild(buildResultForm(w));
         card.appendChild(body);
 
         var cf=el("div","cf");
@@ -1253,6 +1715,7 @@
           if(isPost)delete state.postponed[w.id];else state.postponed[w.id]=1;
           rerender();});
         if(!state.done[w.id])cf.appendChild(pp);
+        else if(!isTestId(w.id))cf.appendChild(buildRpe(w));
         var cp=el("button","copy",'<span>⧉</span><span>نسخ الخطوات</span>');
         cp.addEventListener("click",function(){
           var txt=workoutText(w);
@@ -1265,6 +1728,103 @@
         grid.appendChild(card);
       });
     });
+  }
+
+  /* ---------- Backup / calendar export ---------- */
+  function saveFile(name,text,mime){
+    try{
+      var blob=new Blob([text],{type:mime+";charset=utf-8"});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement("a");a.href=url;a.download=name;
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+      return true;
+    }catch(e){return false;}
+  }
+  function dbMsg(text,cls){
+    var m=document.getElementById("db-msg");if(!m)return;
+    m.hidden=!text;m.className="db-msg"+(cls?" "+cls:"");m.textContent=text||"";
+  }
+  function exportBackup(){
+    var payload={app:"yoyo-ir1",v:1,exported:new Date().toISOString(),state:{
+      age:state.age,rhr:state.rhr,max:state.max,week:state.week,weekAuto:state.weekAuto,
+      testDate:state.testDate,shift:state.shift,done:state.done,postponed:state.postponed,
+      moved:state.moved,results:state.results,rpe:state.rpe}};
+    var name="yoyo-backup-"+toISO(todayD())+".json";
+    if(saveFile(name,JSON.stringify(payload,null,2),"application/json"))
+      dbMsg("✓ نُزّلت النسخة الاحتياطية: "+name,"ok");
+    else dbMsg("تعذّر إنشاء الملف في هذا المتصفّح.","err");
+  }
+  function importBackup(file){
+    var rd=new FileReader();
+    rd.onerror=function(){dbMsg("تعذّرت قراءة الملف.","err");};
+    rd.onload=function(){
+      var data;
+      try{data=JSON.parse(rd.result);}catch(e){dbMsg("الملف ليس JSON صالحًا.","err");return;}
+      var s=(data&&data.state)?data.state:data;
+      if(!s||typeof s!=="object"){dbMsg("لم أجد بيانات صالحة في الملف.","err");return;}
+      if(data&&data.app&&data.app!=="yoyo-ir1"){dbMsg("هذا الملف ليس نسخة احتياطية لهذا البرنامج.","err");return;}
+      if(!window.confirm("استيراد هذه النسخة سيستبدل تقدّمك الحالي على هذا الجهاز. متابعة؟"))return;
+      state.done={};state.postponed={};state.moved={};state.results={};state.rpe={};
+      applyState(s);
+      if(state.weekAuto)state.week=autoWeek();
+      syncInputs();renderMeter();rerender();
+      var n=Object.keys(state.done).length,r=Object.keys(state.results).length;
+      dbMsg("✓ استُوردت النسخة: "+n+" تمرين مُنجز و"+r+" نتيجة اختبار.","ok");
+    };
+    rd.readAsText(file);
+  }
+
+  /* --- iCalendar (RFC 5545) --- */
+  function icsEsc(s){return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");}
+  /* الطيّ عند ٧٥ ثمانيّة دون كسر محرف متعدّد البايتات — النص عربي وفيه رموز
+     خارج المستوى الأساسي (إيموجي)، لذا نمرّ على نقاط الترميز لا على وحدات UTF-16. */
+  function utf8Len(cp){return cp<0x80?1:cp<0x800?2:cp<0x10000?3:4;}
+  function icsFold(line){
+    var chars=Array.from(line),out="",cur="",n=0;
+    for(var i=0;i<chars.length;i++){
+      var b=utf8Len(chars[i].codePointAt(0));
+      if(n+b>73){out+=cur+"\r\n ";cur="";n=1;}
+      cur+=chars[i];n+=b;
+    }
+    return out+cur;
+  }
+  function icsStamp(d){
+    function p(n){return (n<10?"0":"")+n;}
+    return d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+"T"+
+           p(d.getUTCHours())+p(d.getUTCMinutes())+p(d.getUTCSeconds())+"Z";
+  }
+  function icsDate(d){return toISO(d).replace(/-/g,"");}
+  function exportICS(){
+    var rows=scheduleAll();
+    if(!rows.length){dbMsg("لا توجد تمارين لتصديرها.","err");return;}
+    var now=icsStamp(new Date());
+    var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//trainsaud//YYIR1 8-week//AR",
+           "CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:برنامج اليو-يو YYIR1"];
+    rows.forEach(function(x){
+      var isTest=(x.w.zone||x.day.zone)==="test";
+      var title=(isTest?"🏁 ":"🏃 ")+"أسبوع "+x.wk+" · "+x.w.id;
+      var desc=[x.day.focus||"",
+        "المدّة التقريبية: "+(isTest?"مفتوحة":Math.round(workoutSecs(x.w)/60)+" دقيقة"),
+        x.w.notes||"",
+        state.postponed[x.w.id]?"(مؤجّل)":"",
+        state.moved[x.w.id]?"(منقول عن موعده الأصلي)":""].filter(Boolean).join("\n");
+      L.push("BEGIN:VEVENT");
+      L.push("UID:"+x.w.id.toLowerCase()+"-"+icsDate(x.date)+"@trainsaud");
+      L.push("DTSTAMP:"+now);
+      L.push("DTSTART;VALUE=DATE:"+icsDate(x.date));
+      L.push("DTEND;VALUE=DATE:"+icsDate(addDays(x.date,1)));
+      L.push(icsFold("SUMMARY:"+icsEsc(title)));
+      L.push(icsFold("DESCRIPTION:"+icsEsc(desc)));
+      if(state.done[x.w.id])L.push("STATUS:CONFIRMED");
+      L.push("TRANSP:TRANSPARENT");
+      L.push("END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    var name="yoyo-program-"+toISO(startDate())+".ics";
+    if(saveFile(name,L.join("\r\n")+"\r\n","text/calendar"))
+      dbMsg("✓ صُدِّر "+rows.length+" تمرينًا إلى "+name+" — افتحه لإضافته لتقويم جوالك.","ok");
+    else dbMsg("تعذّر إنشاء ملف التقويم في هذا المتصفّح.","err");
   }
 
   /* ---------- Progress ---------- */
@@ -1310,7 +1870,7 @@
     if(a>=10&&a<=90)state.age=a;
     if(r>=30&&r<=110)state.rhr=r;
     state.max=(m>=140&&m<=220)?m:null;
-    save();renderMeter();renderWeek();
+    save();renderMeter();renderWeek();renderFit();
   }
 
   /* ---------- Theme ---------- */
@@ -1326,26 +1886,58 @@
     });
   })();
 
-  /* ---------- FIT script text ---------- */
-  var FIT=[
+  /* ---------- FIT script (مُولَّد من بيانات البرنامج ونطاقاتك الحالية) ---------- */
+  var FIT_KIND={"Warm Up":"warmup","Cool Down":"cooldown","Run":"active",
+                "Recover":"recovery","Rest":"rest","Exercise":"active"};
+  var FIT_TGT={wu:"`hr:${Z.wu[0]}:${Z.wu[1]}`",z2:"`hr:${Z.z2[0]}:${Z.z2[1]}`",
+               z3:"`hr:${Z.z3[0]}:${Z.z3[1]}`",z4:"`hr:${Z.z4[0]}:${Z.z4[1]}`",
+               cd:"`hrmax:${Z.cd}`",cd_low:"`hrmax:${Z.cdLow}`",lap:'"lap"',none:'"none"'};
+  function fitStep(s,inRep){
+    var kind=FIT_KIND[s.t]||"active";
+    if(inRep&&kind==="active")kind="interval";
+    if(s.d==="Lap Button")return '{kind:"'+kind+'", dur:null, tgt:"lap"}';
+    return '{kind:"'+kind+'", dur:'+durSecs(s.d)+', tgt:'+(FIT_TGT[s.tg]||'"none"')+'}';
+  }
+  function fitZLine(){
+    var z=zones();
+    return "const Z = { wu:["+z.warmup[0]+","+z.warmup[1]+"], z2:["+z.z[1].lo+","+z.z[1].hi+
+           "], z3:["+z.z[2].lo+","+z.z[2].hi+"], z4:["+z.z[3].lo+","+z.z[3].hi+
+           "], cd:"+z.cd+", cdLow:"+z.cdlow+" };";
+  }
+  function fitWorkoutLines(){
+    var out=[];
+    WEEKS.forEach(function(wk){
+      out.push("  // ── أسبوع "+wk.n+" · "+wk.phase+" ──");
+      weekWorkouts(wk).forEach(function(w){
+        var steps=w.steps.map(function(s){
+          if(s.t==="Repeat")return '{kind:"repeat", reps:'+s.reps+', sub:[ '+
+            s.sub.map(function(x){return fitStep(x,true);}).join(", ")+' ]}';
+          return fitStep(s,false);
+        });
+        out.push('  { name:"'+w.id+'", sport:"'+(w.activity==="Strength"?"training":"running")+'", steps:[');
+        steps.forEach(function(t,i){out.push("     "+t+(i<steps.length-1?",":""));});
+        out.push("  ]},");
+      });
+    });
+    return out;
+  }
+  function buildFIT(){
+    return FIT_HEAD.concat([fitZLine(),
+'',
+'// dur بالثواني. tgt: "hr:lo:hi" أو "hrmax:v" أو "none" أو "lap"',
+'const WORKOUTS = [']).concat(fitWorkoutLines()).concat(["];",""]).concat(FIT_TAIL).join("\n");
+  }
+  var FIT_HEAD=[
 '// generate-fit-workouts.js  —  توليد ملفات .FIT لكل تمرين',
+'// مُولَّد تلقائيًا من البرنامج ومن نطاقات نبضك الحالية — أعِد التنزيل بعد أي تعديل عليها.',
 '// التشغيل: node generate-fit-workouts.js   ثم انسخ مجلد out/ إلى /GARMIN/NewFiles',
 'const fs = require("fs");',
 'const path = require("path");',
 'const { Encoder, Profile } = require("@garmin/fitsdk");',
 '',
-'// نبضك: عدّل هذه القيم لتطابق نطاقاتك (bpm في FIT = القيمة + 100)',
-'const Z = { wu:[121,144], z2:[136,150], z3:[150,165], z4:[165,179], cd:135, cdLow:130 };',
-'',
-'// تعريف مختصر لكل تمرين. dur بالثواني. tgt: "hr:lo:hi" أو "hrmax:v" أو "none" أو "lap"',
-'const WORKOUTS = [',
-'  { name:"W1-D1-Intervals", steps:[',
-'     {kind:"warmup", dur:600, tgt:`hr:${Z.wu[0]}:${Z.wu[1]}`},',
-'     {kind:"repeat", reps:8, sub:[ {kind:"interval",dur:30,tgt:"none"}, {kind:"recovery",dur:30,tgt:"none"} ]},',
-'     {kind:"cooldown", dur:480, tgt:`hrmax:${Z.cd}`} ]},',
-'  // ... أضف بقية التمارين بنفس الشكل (انسخ الخطوات من كل بطاقة)',
-'];',
-'',
+'// نطاقاتك المحسوبة بطريقة Karvonen (بالنبضة/الدقيقة). في FIT يُرمَّز النبض المطلق = القيمة + 100.'
+  ];
+  var FIT_TAIL=[
 'const INTENSITY = { warmup:"warmup", interval:"active", active:"active",',
 '                    recovery:"recovery", rest:"rest", cooldown:"cooldown" };',
 '',
@@ -1386,7 +1978,7 @@
 '  const enc = new Encoder();',
 '  enc.writeMesg("fileId", { type:"workout", manufacturer:"development",',
 '                            product:0, timeCreated:new Date(), serialNumber:0 });',
-'  enc.writeMesg("workout", { wktName:w.name, sport:"running",',
+'  enc.writeMesg("workout", { wktName:w.name, sport:w.sport || "running",',
 '                             numValidSteps:steps.length });',
 '  steps.forEach(s => enc.writeMesg("workoutStep", s));',
 '  fs.writeFileSync(path.join("out", w.name + ".fit"), Buffer.from(enc.close()));',
@@ -1394,12 +1986,24 @@
 '}',
 '// ملاحظة: أسماء الحقول تتبع FIT Profile وقد تختلف قليلًا بين إصدارات المكتبة —',
 '// راجع @garmin/fitsdk إن ظهر خطأ حقل، والأضمن عمليًا هو الإدخال اليدوي.'
-  ].join("\n");
+  ];
+
+  function renderFit(){
+    var t=buildFIT();
+    document.getElementById("fitcode").textContent=t;
+    return t;
+  }
 
   /* ---------- Boot ---------- */
-  document.getElementById("fitcode").textContent=FIT;
+  renderFit();
   document.querySelector('[data-copy="fit"]').addEventListener("click",function(){
-    var b=this;if(navigator.clipboard){navigator.clipboard.writeText(FIT).then(function(){b.textContent="✓ نُسخ";setTimeout(function(){b.textContent="⧉ نسخ السكربت";},1600);});}
+    var b=this;if(navigator.clipboard){navigator.clipboard.writeText(buildFIT()).then(function(){b.textContent="✓ نُسخ";setTimeout(function(){b.textContent="⧉ نسخ السكربت";},1600);});}
+  });
+  document.getElementById("fit-dl").addEventListener("click",function(){
+    var b=this;
+    if(saveFile("generate-fit-workouts.js",buildFIT(),"text/javascript")){
+      b.textContent="✓ نُزّل";setTimeout(function(){b.textContent="⭳ نزّل الملف";},1600);
+    }
   });
   ["in-age","in-rhr","in-max"].forEach(function(id){document.getElementById(id).addEventListener("input",onInput);});
   document.getElementById("in-date").addEventListener("change",function(){
@@ -1407,11 +2011,18 @@
       if(state.weekAuto)state.week=autoWeek();
       rerender();}
   });
+  document.getElementById("db-export").addEventListener("click",exportBackup);
+  document.getElementById("db-ics").addEventListener("click",exportICS);
+  document.getElementById("db-import").addEventListener("click",function(){document.getElementById("db-file").click();});
+  document.getElementById("db-file").addEventListener("change",function(){
+    if(this.files&&this.files[0])importBackup(this.files[0]);
+    this.value="";
+  });
   document.getElementById("pg-reset").addEventListener("click",function(){
     if(window.confirm("تصفير كل علامات الإنجاز والتأجيل؟")){state.done={};state.postponed={};rerender();}
   });
 
-  syncInputs();renderMeter();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();
+  syncInputs();renderMeter();renderPlanCtl();renderRail();renderWeek();renderProgress();renderCountdown();renderResults();
 })();
 </script>
 
@@ -1485,22 +2096,49 @@ window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":23,"fb":29.27,"td":4480,"lv":[[1,40.
     $("yy-start").disabled=!!playing; $("yy-pause").disabled=!playing;
     $("yy-start").innerHTML=(audio&&audio.currentTime>0&&!playing)?"▶ متابعة":"▶ ابدأ"; }
   function ended(){ $("yy-phase").style.background="var(--test)";$("yy-plab").textContent="انتهى التسجيل";
-    $("yy-pbig").textContent="أحسنت";$("yy-pnx").textContent="سجّل مسافتك الأخيرة";$("yy-pfill").style.width="100%";btns(); }
+    $("yy-pbig").textContent="أحسنت";$("yy-pnx").textContent="سجّل مسافتك الأخيرة";$("yy-pfill").style.width="100%";
+    btns(); syncSave(); }
 
   function start(){ var a=ensureAudio(); a.play().catch(function(){$("yy-pnx").textContent="اضغط ابدأ مجددًا للسماح بتشغيل الصوت";}); }
   function pause(){ if(audio)audio.pause(); stopLoop(); }
   function reset(){ if(audio){audio.pause();audio.currentTime=0;} stopLoop(); update(); btns(); }
   function skipIntro(){ var a=ensureAudio(); try{a.currentTime=Math.max(0,(TL.ts||0));}catch(e){} a.play().catch(function(){}); }
 
-  function open(){ $("yoyo-overlay").hidden=false; ensureAudio(); renderLevels(-1); update(); btns(); }
+  /* ===== حفظ المسافة كنتيجة اختبار ===== */
+  var curTest=null;                       /* معرّف الاختبار الذي فُتح المشغّل منه */
+  function curDist(){ return parseInt($("yy-dist").textContent,10)||0; }
+  function syncSave(){
+    var row=$("yy-saverow");
+    var target=curTest||(window.__nextTestId&&window.__nextTestId());
+    var d=curDist();
+    if(!target||d<=0){ row.hidden=true; return; }
+    row.hidden=false;
+    $("yy-savedist").textContent=d;
+    $("yy-savelab").textContent=(window.__testLabel?window.__testLabel(target):"نتيجتك")+" — توقّفت هنا؟ احفظ المسافة.";
+  }
+  function saveDist(){
+    var target=curTest||(window.__nextTestId&&window.__nextTestId());
+    var d=curDist();
+    if(!target||d<=0)return;
+    if(window.__saveResult){
+      window.__saveResult(target,d);
+      $("yy-savelab").textContent="✓ حُفظت "+d+" م في «"+(window.__testLabel?window.__testLabel(target):"نتيجتك")+"».";
+      $("yy-save").disabled=true;
+      setTimeout(function(){ $("yy-save").disabled=false; syncSave(); },2500);
+    }
+  }
+
+  function open(testId){ curTest=(typeof testId==="string")?testId:null;
+    $("yoyo-overlay").hidden=false; ensureAudio(); renderLevels(-1); update(); btns(); syncSave(); }
   function close(){ pause(); $("yoyo-overlay").hidden=true; }
   window.__openYoyo=open;
 
-  $("open-player").addEventListener("click",open);
+  $("open-player").addEventListener("click",function(){open(null);});
   $("yy-close").addEventListener("click",close);
   $("yy-start").addEventListener("click",start);
-  $("yy-pause").addEventListener("click",pause);
-  $("yy-reset").addEventListener("click",reset);
+  $("yy-pause").addEventListener("click",function(){pause();syncSave();});
+  $("yy-reset").addEventListener("click",function(){reset();syncSave();});
+  $("yy-save").addEventListener("click",saveDist);
   $("yy-test").addEventListener("click",skipIntro);
   $("yy-vol").addEventListener("input",function(){ if(audio)audio.volume=(+this.value)/100; });
   $("yoyo-overlay").addEventListener("click",function(e){ if(e.target===this)close(); });
@@ -1508,9 +2146,75 @@ window.__YOYO_TL={"a":"audio/yoyo.mp3","ts":23,"fb":29.27,"td":4480,"lv":[[1,40.
 })();
 </script>
 <script>
-if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);}); });
-}
+/* ===== Service worker + تحميل الصوت للاستخدام دون إنترنت ===== */
+(function(){
+  var CACHE="yoyo-ir1-v3", AUDIO="audio/yoyo.mp3";
+  var bar=document.getElementById("offlineBar");
+  var btn=document.getElementById("ob-btn"), tt=document.getElementById("ob-title"),
+      sub=document.getElementById("ob-sub"), prog=document.getElementById("ob-prog"),
+      fill=document.getElementById("ob-fill");
+  if(!bar||!("caches" in window))return;
+  bar.hidden=false;
+
+  function mb(n){return (n/1048576).toFixed(1);}
+  function ready(){
+    bar.classList.add("ready");
+    tt.textContent="✓ الصوت محفوظ على جهازك";
+    sub.textContent="مشغّل الاختبار يعمل الآن بلا إنترنت. احذفه لتحرير المساحة إن احتجت.";
+    btn.textContent="احذف الصوت";btn.className="pill ghost";btn.disabled=false;
+    prog.hidden=true;btn.onclick=remove;
+  }
+  function idle(){
+    bar.classList.remove("ready");
+    tt.textContent="حمّل الصوت للاستخدام دون إنترنت";
+    sub.textContent="تسجيل الاختبار ≈٢٨ ميجا. حمّله مرة واحدة على الشبكة ليعمل يوم الاختبار بلا إنترنت.";
+    btn.textContent="حمّل الآن";btn.className="pill solid";btn.disabled=false;
+    prog.hidden=true;fill.style.width="0";btn.onclick=download;
+  }
+  function check(){
+    caches.open(CACHE).then(function(c){return c.match(new Request(new URL(AUDIO,location.href).href),{ignoreVary:true});})
+      .then(function(hit){hit?ready():idle();}).catch(idle);
+  }
+  function download(){
+    btn.disabled=true;btn.textContent="جارٍ التحميل…";prog.hidden=false;
+    fetch(AUDIO).then(function(res){
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      var total=+res.headers.get("content-length")||0, type=res.headers.get("content-type")||"audio/mpeg";
+      if(!res.body){return res.blob().then(function(b){return {blob:b,type:type};});}
+      var reader=res.body.getReader(), chunks=[], got=0;
+      return (function pump(){
+        return reader.read().then(function(r){
+          if(r.done)return {blob:new Blob(chunks,{type:type}),type:type};
+          chunks.push(r.value);got+=r.value.length;
+          if(total){fill.style.width=Math.round(got/total*100)+"%";}
+          sub.textContent="نُزّل "+mb(got)+(total?" من "+mb(total):"")+" ميجا…";
+          return pump();
+        });
+      })();
+    }).then(function(o){
+      return caches.open(CACHE).then(function(c){
+        return c.put(new Request(new URL(AUDIO,location.href).href),
+          new Response(o.blob,{status:200,headers:{"Content-Type":o.type,"Content-Length":String(o.blob.size)}}));
+      });
+    }).then(check).catch(function(e){
+      sub.textContent="تعذّر التحميل ("+(e&&e.message||"خطأ")+"). تأكّد من الاتصال وحاول مجددًا.";
+      btn.disabled=false;btn.textContent="أعد المحاولة";prog.hidden=true;
+    });
+  }
+  function remove(){
+    if(!window.confirm("حذف الصوت المخزَّن؟ سيحتاج المشغّل إنترنت بعدها."))return;
+    btn.disabled=true;
+    caches.open(CACHE).then(function(c){return c.delete(new Request(new URL(AUDIO,location.href).href),{ignoreVary:true});})
+      .then(check).catch(check);
+  }
+
+  if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+    window.addEventListener("load",function(){
+      navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e);});
+    });
+  }
+  check();
+})();
 </script>
 </body>
 </html>
